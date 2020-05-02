@@ -2,6 +2,8 @@
 #include <stdio.h>	
 #include <string.h>
 #include <stdlib.h>
+#include <stdbool.h>
+#include "symbol_table.h"
 
 %}
 
@@ -31,15 +33,15 @@ PROG: SEMI
 
 int main(int argc, char** argv)
 {
-	int tok;
-	while(tok = yylex()) 
-	{
-		printf("%d", tok);
-		if(tok == NUM_INT) printf(" = %d\n", yylval.num_i);
-		else if(tok == NUM_FLOAT) printf(" = %f\n", yylval.num_f);
-		else if(tok == NAME) printf(" = %s\n", yylval.str);
-		else printf("\n"); 
-	}
+	// int tok;
+	// while(tok = yylex()) 
+	// {
+	// 	printf("%d", tok);
+	// 	if(tok == NUM_INT) printf(" = %d\n", yylval.num_i);
+	// 	else if(tok == NUM_FLOAT) printf(" = %f\n", yylval.num_f);
+	// 	else if(tok == NAME) printf(" = %s\n", yylval.str);
+	// 	else printf("\n"); 
+	// }
 }
 
 yyerror(const char* s)

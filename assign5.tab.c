@@ -67,9 +67,11 @@
 #include <stdio.h>	
 #include <string.h>
 #include <stdlib.h>
+#include <stdbool.h>
+#include "symbol_table.h"
 
 
-#line 73 "assign5.tab.c" /* yacc.c:339  */
+#line 75 "assign5.tab.c" /* yacc.c:339  */
 
 # ifndef YY_NULLPTR
 #  if defined __cplusplus && 201103L <= __cplusplus
@@ -150,13 +152,13 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 9 "assign5.y" /* yacc.c:355  */
+#line 11 "assign5.y" /* yacc.c:355  */
 
 	float num_f;
 	int num_i;
 	char* str;
 
-#line 160 "assign5.tab.c" /* yacc.c:355  */
+#line 162 "assign5.tab.c" /* yacc.c:355  */
 };
 
 typedef union YYSTYPE YYSTYPE;
@@ -173,7 +175,7 @@ int yyparse (void);
 
 /* Copy the second part of user declarations.  */
 
-#line 177 "assign5.tab.c" /* yacc.c:358  */
+#line 179 "assign5.tab.c" /* yacc.c:358  */
 
 #ifdef short
 # undef short
@@ -474,7 +476,7 @@ static const yytype_uint8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    26,    26,    27
+       0,    28,    28,    29
 };
 #endif
 
@@ -1248,13 +1250,13 @@ yyreduce:
   switch (yyn)
     {
         case 3:
-#line 27 "assign5.y" /* yacc.c:1646  */
+#line 29 "assign5.y" /* yacc.c:1646  */
     {printf("PROG\n");}
-#line 1254 "assign5.tab.c" /* yacc.c:1646  */
+#line 1256 "assign5.tab.c" /* yacc.c:1646  */
     break;
 
 
-#line 1258 "assign5.tab.c" /* yacc.c:1646  */
+#line 1260 "assign5.tab.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -1482,20 +1484,20 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 30 "assign5.y" /* yacc.c:1906  */
+#line 32 "assign5.y" /* yacc.c:1906  */
 
 
 int main(int argc, char** argv)
 {
-	int tok;
-	while(tok = yylex()) 
-	{
-		printf("%d", tok);
-		if(tok == NUM_INT) printf(" = %d\n", yylval.num_i);
-		else if(tok == NUM_FLOAT) printf(" = %f\n", yylval.num_f);
-		else if(tok == NAME) printf(" = %s\n", yylval.str);
-		else printf("\n"); 
-	}
+	// int tok;
+	// while(tok = yylex()) 
+	// {
+	// 	printf("%d", tok);
+	// 	if(tok == NUM_INT) printf(" = %d\n", yylval.num_i);
+	// 	else if(tok == NUM_FLOAT) printf(" = %f\n", yylval.num_f);
+	// 	else if(tok == NAME) printf(" = %s\n", yylval.str);
+	// 	else printf("\n"); 
+	// }
 }
 
 yyerror(const char* s)
