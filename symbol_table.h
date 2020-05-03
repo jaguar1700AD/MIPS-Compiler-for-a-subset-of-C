@@ -40,11 +40,11 @@ int sym_table_search(struct symbol_table* table, char* name)
 		{
 			if (first)
 			{
-				if (!strcmp(top->name, name)) return 20 + top->type;
+				if (!strcmp(top->name, name)) return 10 + top->type;
 			}
 			else
 			{
-				if (!strcmp(top->name, name)) return 10 + top->type;
+				if (!strcmp(top->name, name)) return 20 + top->type;
 			}
 			top = top->next;
 		}

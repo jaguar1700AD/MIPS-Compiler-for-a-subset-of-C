@@ -362,16 +362,16 @@ struct yy_trans_info
 	};
 static const flex_int16_t yy_accept[95] =
     {   0,
-        0,    0,   42,   40,   39,   39,   15,   20,   40,   24,
-       25,   18,   16,   22,   17,   19,    4,   23,   21,    6,
-        8,    7,    3,    3,    3,    3,    3,    3,    3,    3,
-        3,    3,    3,    3,   26,   40,   27,   11,   13,    0,
-        4,    9,   12,   10,    3,    3,    3,    3,    3,    3,
-        3,    3,    3,    3,    3,    3,    3,    3,   14,    5,
-        4,    3,    3,    3,    3,    3,    3,    1,    3,    3,
-        3,    3,    3,    3,    3,    3,    3,    3,    3,    3,
-        3,    3,    3,    3,    3,    2,    3,    3,    3,    3,
-        3,    3,    3,    0
+        0,    0,   42,   40,   39,   39,   23,   28,   40,   32,
+       33,   26,   24,   30,   25,   27,   37,   31,   29,   14,
+       16,   15,   36,   36,   36,   36,   36,   36,   36,   36,
+       36,   36,   36,   36,   34,   40,   35,   19,   21,    0,
+       37,   17,   20,   18,   36,   36,   36,   36,   36,   36,
+       36,    8,   36,   36,   36,   36,   36,   36,   22,   38,
+       37,   36,   36,   36,   36,   36,   12,    1,   36,   36,
+       36,   36,   36,   36,   11,   36,    9,   36,    3,   36,
+       36,    4,   36,    6,   36,    2,   36,   36,   13,   36,
+        5,   10,    7,    0
 
     } ;
 
@@ -784,192 +784,192 @@ do_action:	/* This label is used only to access EOF actions. */
 case 1:
 YY_RULE_SETUP
 #line 7 "assign5.l"
-{return INT; }
+{return TYPE_INT; }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
 #line 8 "assign5.l"
-{return FLOAT; }
+{return TYPE_FLOAT; }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
 #line 10 "assign5.l"
-{ yylval.str = yytext; return NAME; }
+{return KEY_MAIN; }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
 #line 11 "assign5.l"
-{yylval.num_i = atoi(yytext); return NUM_INT;}
+{return KEY_VOID; }
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
 #line 12 "assign5.l"
-{yylval.num_f = strtof(yytext, NULL); return NUM_FLOAT;}
+{return KEY_RETURN; }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 14 "assign5.l"
-{return LESS;}
+#line 13 "assign5.l"
+{return KEY_BREAK; }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 15 "assign5.l"
-{return GREATER;}
+#line 14 "assign5.l"
+{return KEY_DEFAULT; }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 16 "assign5.l"
-{return EQUAL;}
+#line 15 "assign5.l"
+{return KEY_IF; }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 17 "assign5.l"
-{return LESS_EQUAL; }
+#line 16 "assign5.l"
+{return KEY_ELSE; }
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 18 "assign5.l"
-{return GREATER_EQUAL;}
+#line 17 "assign5.l"
+{return KEY_SWITCH; }
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 19 "assign5.l"
-{return NOT_EQUAL; }
+#line 18 "assign5.l"
+{return KEY_CASE; }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 20 "assign5.l"
-{return IS_EQUAL; }
+#line 19 "assign5.l"
+{return KEY_FOR; }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 22 "assign5.l"
-{return AND; }
+#line 20 "assign5.l"
+{return KEY_WHILE; }
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 23 "assign5.l"
-{return OR; }
+#line 22 "assign5.l"
+{return LESS;}
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 24 "assign5.l"
-{return NOT; }
+#line 23 "assign5.l"
+{return GREATER;}
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 26 "assign5.l"
-{return PLUS;}
+#line 24 "assign5.l"
+{return EQUAL;}
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 27 "assign5.l"
-{return MINUS;}
+#line 25 "assign5.l"
+{return LESS_EQUAL; }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 28 "assign5.l"
-{return MUL;}
+#line 26 "assign5.l"
+{return GREATER_EQUAL;}
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 29 "assign5.l"
-{return DIV;}
+#line 27 "assign5.l"
+{return NOT_EQUAL; }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 30 "assign5.l"
-{return MOD;}
+#line 28 "assign5.l"
+{return IS_EQUAL; }
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 32 "assign5.l"
-{return SEMI;}
+#line 30 "assign5.l"
+{return AND; }
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 33 "assign5.l"
-{return COMMA;}
+#line 31 "assign5.l"
+{return OR; }
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 34 "assign5.l"
-{return COLON;}
+#line 32 "assign5.l"
+{return NOT; }
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 36 "assign5.l"
-{return LB; }
+#line 34 "assign5.l"
+{return PLUS;}
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 37 "assign5.l"
-{return RB; }
+#line 35 "assign5.l"
+{return MINUS;}
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 38 "assign5.l"
-{return LC; }
+#line 36 "assign5.l"
+{return MUL;}
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 39 "assign5.l"
-{return RC; }
+#line 37 "assign5.l"
+{return DIV;}
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 41 "assign5.l"
-{return MAIN; }
+#line 38 "assign5.l"
+{return MOD;}
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 42 "assign5.l"
-{return VOID; }
+#line 40 "assign5.l"
+{return SEMI;}
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 43 "assign5.l"
-{return RETURN; }
+#line 41 "assign5.l"
+{return COMMA;}
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 44 "assign5.l"
-{return BREAK; }
+#line 42 "assign5.l"
+{return COLON;}
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 45 "assign5.l"
-{return DEFAULT; }
+#line 44 "assign5.l"
+{return LB; }
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 46 "assign5.l"
-{return IF; }
+#line 45 "assign5.l"
+{return RB; }
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 47 "assign5.l"
-{return ELSE; }
+#line 46 "assign5.l"
+{return LC; }
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 48 "assign5.l"
-{return SWITCH; }
+#line 47 "assign5.l"
+{return RC; }
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
 #line 49 "assign5.l"
-{return CASE; }
+{ yylval.str = strdup(yytext); return NAME; }
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
 #line 50 "assign5.l"
-{return FOR; }
+{yylval.num_i = atoi(yytext); return NUM_INT;}
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
 #line 51 "assign5.l"
-{return WHILE; }
+{yylval.num_f = strtof(yytext, NULL); return NUM_FLOAT;}
 	YY_BREAK
 case 39:
 /* rule 39 can match eol */

@@ -45,8 +45,8 @@ extern int yydebug;
 # define YYTOKENTYPE
   enum yytokentype
   {
-    INT = 258,
-    FLOAT = 259,
+    TYPE_INT = 258,
+    TYPE_FLOAT = 259,
     NAME = 260,
     NUM_INT = 261,
     NUM_FLOAT = 262,
@@ -72,17 +72,17 @@ extern int yydebug;
     RB = 282,
     LC = 283,
     RC = 284,
-    MAIN = 285,
-    VOID = 286,
-    RETURN = 287,
-    BREAK = 288,
-    DEFAULT = 289,
-    IF = 290,
-    ELSE = 291,
-    SWITCH = 292,
-    CASE = 293,
-    FOR = 294,
-    WHILE = 295
+    KEY_MAIN = 285,
+    KEY_VOID = 286,
+    KEY_RETURN = 287,
+    KEY_BREAK = 288,
+    KEY_DEFAULT = 289,
+    KEY_IF = 290,
+    KEY_ELSE = 291,
+    KEY_SWITCH = 292,
+    KEY_CASE = 293,
+    KEY_FOR = 294,
+    KEY_WHILE = 295
   };
 #endif
 
@@ -91,7 +91,7 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 11 "assign5.y" /* yacc.c:1909  */
+#line 14 "assign5.y" /* yacc.c:1909  */
 
 	float num_f;
 	int num_i;
