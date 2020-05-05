@@ -43,6 +43,15 @@ struct code
 	*/
 };
 
+void code_print(struct code* code)
+{
+	while(code != NULL)
+	{
+		printf("%s %s %s %s \n", code->op, code->arg1, code->arg2, code->result);
+		code = code->next;
+	}
+}
+
 struct code* code_new(char* op, char* arg1, char* arg2, char* result)
 {
 	struct code* codeP = malloc(sizeof(struct code));
@@ -50,19 +59,31 @@ struct code* code_new(char* op, char* arg1, char* arg2, char* result)
 	
 	codeP->op = malloc(sizeof(op));
 	codeP->op[0] = '\0';
-	strcat(codeP->op, op);
+	strcpy(codeP->op, op);
 
-	codeP->arg1 = malloc(sizeof(arg1));
-	codeP->arg1[0] = '\0';
-	strcat(codeP->arg1, arg1);
+	if (arg1 != NULL)
+	{
+		codeP->arg1 = malloc(sizeof(arg1));
+		codeP->arg1[0] = '\0';
+		strcpy(codeP->arg1, arg1);
+	}
+	else codeP->arg1 = NULL;
 
-	codeP->arg2 = malloc(sizeof(arg2));
-	codeP->arg2[0] = '\0';
-	strcat(codeP->arg2, arg2);
-
-	codeP->result = malloc(sizeof(result));
-	codeP->result[0] = '\0';
-	strcat(codeP->result, result);
+	if (arg2 != NULL)
+	{
+		codeP->arg2 = malloc(sizeof(arg2));
+		codeP->arg2[0] = '\0';
+		strcpy(codeP->arg2, arg2);
+	}
+	else codeP->arg2 = NULL;
+	
+	if (result != NULL)
+	{
+		codeP->result = malloc(sizeof(result));
+		codeP->result[0] = '\0';
+		strcpy(codeP->result, result);
+	}
+	else codeP->result = NULL;
 
 	return codeP;
 }
@@ -100,6 +121,7 @@ void code_list_backpatch(struct code_list* list, char* jump_label)
 	while(list != NULL)
 	{
 		list->code->result = malloc(sizeof(jump_label));
+		list->code->result[0] = '\0';
 		strcpy(list->code->result, jump_label);
 		list = list->next;
 	}
@@ -163,8 +185,9 @@ struct exprn
 	// For ints / floats, last line will be an assignment of store_var
 };
 
-void exprn_init_NULL(struct exprn* exprn)
+struct exprn* exprn_init_null()
 {
+	struct exprn* exprn = malloc(sizeof(struct exprn));
 	exprn->codeP = NULL;
 	exprn->true_jump_lines = NULL;
 	exprn->false_jump_lines = NULL;
@@ -174,6 +197,7 @@ void exprn_init_NULL(struct exprn* exprn)
 	exprn->false_jump = NULL;
 	exprn->last_line_P = NULL;
 	exprn->store_var = NULL;
+	return exprn;
 }
 
 void exprn_init_with_int_value(struct exprn* exprn, int x)
@@ -206,8 +230,8 @@ void exprn_init_with_name(struct exprn* exprn, char* x, int type)
 {
 	char* user_var = malloc(sizeof(x) + 1);
 	user_var[0] = '\0';
-	strcpy(user_var, "user_");
-	strcpy(user_var, x);
+	strcat(user_var, "user_");
+	strcat(user_var, x);
 
 	char* var = get_new_var();
 	struct code* new_code = code_new("assign", user_var, NULL, var);
@@ -343,7 +367,16 @@ void exprn_operate(struct exprn* parent, struct exprn* lchild, struct exprn* rch
 
 		if (!strcmp(op, "()"))
 		{
-			parent = lchild;
+			parent->type = lchild->type;
+			parent->codeP = lchild->codeP;
+			parent->true_jump_lines = lchild->true_jump_lines;
+			parent->false_jump_lines = lchild->false_jump_lines;
+			parent->true_jumpPs = lchild->true_jumpPs;
+			parent->false_jumpPs = lchild->false_jumpPs;
+			parent->true_jump = lchild->true_jump;
+			parent->false_jump = lchild->false_jump;
+			parent->last_line_P = lchild->last_line_P;
+			parent->store_var = lchild->store_var;
 		}
 		else if (!strcmp(op, "!"))// NOT
 		{
@@ -411,10 +444,10 @@ void exprn_operate(struct exprn* parent, struct exprn* lchild, struct exprn* rch
 
 	exprn_type_cast(lchild, cast);
 	exprn_type_cast(rchild, cast);
-	parent->type = cast;
 
 	if (present == 1 || present == 2)
 	{
+		parent->type = cast;
 		assert(lchild->last_line_P->next == NULL && rchild->last_line_P->next == NULL);
 		
 		lchild->last_line_P->next = rchild->codeP;
@@ -441,6 +474,7 @@ void exprn_operate(struct exprn* parent, struct exprn* lchild, struct exprn* rch
 	}
 	else if (present == 3)
 	{
+		parent->type = 2;
 		assert(lchild->last_line_P->next == NULL && rchild->last_line_P->next == NULL);
 		
 		lchild->last_line_P->next = rchild->codeP;
@@ -472,6 +506,7 @@ void exprn_operate(struct exprn* parent, struct exprn* lchild, struct exprn* rch
 	}
 	else
 	{
+		parent->type = 2;
 		char* label = get_new_label();
 		struct code* new_code = code_new("label", NULL, NULL, label);
 		new_code->next = rchild->codeP;

@@ -35,9 +35,20 @@ struct symbol_table* table = NULL;
 
 %start PROG
 
-%left IS_EQUAL OR AND NOT
-%left NOT_EQUAL GREATER_EQUAL LESS_EQUAL GREATER LESS
-%left PLUS MINUS MUL DIV MOD
+%left IS_EQUAL 
+%left OR
+%left AND
+%left NOT
+%left NOT_EQUAL 
+%left GREATER_EQUAL
+%left LESS_EQUAL
+%left GREATER
+%left LESS
+%left PLUS 
+%left MINUS
+%left MUL
+%left DIV
+%left MOD
 
 %%
 
@@ -76,46 +87,159 @@ VAR_DEC_LIST: VAR_DEC COMMA VAR_DEC_LIST | VAR_DEC;
 VAR_DEC_GLOBAL: DATA_TYPE {type = $1;} VAR_DEC_LIST;
 
 E: 	E PLUS E
-{exprn_operate($$, $1, $3, "+");}
+{	
+	$$ = exprn_init_null();
+	exprn_operate($$, $1, $3, "+");
+	printf(" \n ....+..... \n");
+	code_print($$->codeP);
+	printf(" \n ............. \n");
+}
 | E MINUS E
-{exprn_operate($$, $1, $3, "-");}
+{	
+	$$ = exprn_init_null();
+	exprn_operate($$, $1, $3, "-");
+	printf(" \n ....-..... \n");
+	code_print($$->codeP);
+	printf(" \n ............. \n");
+}
 | E MUL E
-{exprn_operate($$, $1, $3, "*");}
+{	
+	$$ = exprn_init_null();
+	exprn_operate($$, $1, $3, "*");
+	printf(" \n ....*..... \n");
+	code_print($$->codeP);
+	printf(" \n ............. \n");
+}
 | E DIV E
-{exprn_operate($$, $1, $3, "/");}
+{	
+	$$ = exprn_init_null();
+	exprn_operate($$, $1, $3, "/");
+	printf(" \n ...../.... \n");
+	code_print($$->codeP);
+	printf(" \n ............. \n");
+}
 | E MOD E
-{exprn_operate($$, $1, $3, "%");}
+{	
+	$$ = exprn_init_null();
+	exprn_operate($$, $1, $3, "%");
+	printf(" \n ....MOD..... \n");
+	code_print($$->codeP);
+	printf(" \n ............. \n");
+}
 | E LESS E
-{exprn_operate($$, $1, $3, "<");}
+{	
+	$$ = exprn_init_null();
+	exprn_operate($$, $1, $3, "<");
+	printf(" \n .....<.... \n");
+	code_print($$->codeP);
+	printf(" \n ............. \n");
+}
 | E GREATER E
-{exprn_operate($$, $1, $3, ">");}
+{
+	$$ = exprn_init_null();
+	exprn_operate($$, $1, $3, ">");
+	printf(" \n .....>.... \n");
+	code_print($$->codeP);
+	printf(" \n ............. \n");
+}
 | E LESS_EQUAL E
-{exprn_operate($$, $1, $3, "<=");}
+{
+	$$ = exprn_init_null();
+	exprn_operate($$, $1, $3, "<=");
+	printf(" \n ....<=..... \n");
+	code_print($$->codeP);
+	printf(" \n ............. \n");
+}
 | E GREATER_EQUAL E
-{exprn_operate($$, $1, $3, ">=");}
+{
+	$$ = exprn_init_null();
+	exprn_operate($$, $1, $3, ">=");
+	printf(" \n .....>=.... \n");
+	code_print($$->codeP);
+	printf(" \n ............. \n");
+}
 | E NOT_EQUAL E
-{exprn_operate($$, $1, $3, "!=");}
+{
+	$$ = exprn_init_null();
+	exprn_operate($$, $1, $3, "!=");
+	printf(" \n .....!=.... \n");
+	code_print($$->codeP);
+	printf(" \n ............. \n");
+}
 | E IS_EQUAL E
-{exprn_operate($$, $1, $3, "==");}
+{
+	$$ = exprn_init_null();
+	exprn_operate($$, $1, $3, "==");
+	printf(" \n ....==..... \n");
+	code_print($$->codeP);
+	printf(" \n ............. \n");
+}
 | E AND E
-{exprn_operate($$, $1, $3, "&&");}
+{
+	$$ = exprn_init_null();
+	exprn_operate($$, $1, $3, "&&");
+	printf(" \n .....&&.... \n");
+	code_print($$->codeP);
+	printf(" \n ............. \n");
+}
 | E OR E
-{exprn_operate($$, $1, $3, "||");}
+{
+	$$ = exprn_init_null();
+	exprn_operate($$, $1, $3, "||");
+	printf(" \n ....||..... \n");
+	code_print($$->codeP);
+	printf(" \n ............. \n");
+}
 | NOT E 
-{exprn_operate($$, $2, NULL, "!");}
+{
+	$$ = exprn_init_null();
+	exprn_operate($$, $2, NULL, "!");
+	printf(" \n .....!.... \n");
+	code_print($$->codeP);
+	printf(" \n ............. \n");
+}
 | LB E RB
-{exprn_operate($$, $2, NULL, "()");}
+{
+	$$ = exprn_init_null();
+	exprn_operate($$, $2, NULL, "()");
+	printf(" \n ....()..... \n");
+	code_print($$->codeP);
+	printf(" \n ............. \n");
+}
 | MINUS E
-{exprn_operate($$, $2, NULL, "-()");}
+{
+	$$ = exprn_init_null();
+	exprn_operate($$, $2, NULL, "-()");
+	printf(" \n ....-()..... \n");
+	code_print($$->codeP);
+	printf(" \n ............. \n");
+}
 | NUM_INT
-{exprn_init_with_int_value($$, $1);}
+{
+	$$ = exprn_init_null();
+	exprn_init_with_int_value($$, $1);
+	printf(" \n ....NUM_INT..... \n");
+	code_print($$->codeP);
+	printf(" \n ............. \n");
+}
 | NUM_FLOAT
-{exprn_init_with_float_value($$, $1);}
+{
+	$$ = exprn_init_null();
+	exprn_init_with_float_value($$, $1);
+	printf(" \n ....NUM_FLOAT..... \n");
+	code_print($$->codeP);
+	printf(" \n ............. \n");
+}
 | NAME
 {
+	$$ = exprn_init_null();
 	int x = sym_table_search(table, $1);
 	if (x == 0) {printf("Variable %s undeclared\n", $1); exit(1);}
 	exprn_init_with_name($$, $1, x % 10);
+
+	printf(" \n ....NAME..... \n");
+	code_print($$->codeP);
+	printf(" \n ............. \n");
 }
 ; 
 
@@ -123,11 +247,7 @@ E: 	E PLUS E
 
 int main(int argc, char** argv)
 {
-	type = -1;
-	table = sym_table_new(NULL);
-	yyparse();
-	sym_table_print(table);
-
+	setvbuf(stdout, NULL, _IONBF, 0);
 	// int tok;
 	// while(tok = yylex()) 
 	// {
@@ -137,6 +257,11 @@ int main(int argc, char** argv)
 	// 	else if(tok == NAME) printf(" = %s\n", yylval.str);
 	// 	else printf("\n"); 
 	// }
+
+	type = -1;
+	table = sym_table_new(NULL);;
+	yyparse();
+	sym_table_print(table);
 }
 
 yyerror(const char* s)
