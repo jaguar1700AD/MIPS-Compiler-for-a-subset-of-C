@@ -3,6 +3,6 @@
 
 int main()
 {
-	int a = 3.5;
-	printf("%d\n", a);
+	float b = 6.5;
+	printf("%f\n", (b > 6) % 2);
 }
