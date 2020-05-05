@@ -48,6 +48,7 @@ struct code
 		(<, x, y, L) 
 		Label L4: ...... (label, NULL, NULL, L4)
 		goto L  ......  (goto, NULL, NULL, L)
+		x = -y .......  (SIGN_REV, y, NULL, x)
 	*/
 };
 
@@ -294,7 +295,7 @@ void exprn_operate(struct exprn* parent, struct exprn* lchild, struct exprn* rch
 		{
 			parent = lchild;
 		}
-		else // NOT
+		else if (op == NOT)// NOT
 		{
 			exprn_type_cast(lchild, 2);
 			parent->type = 2;
@@ -309,6 +310,25 @@ void exprn_operate(struct exprn* parent, struct exprn* lchild, struct exprn* rch
 			parent->false_jump = NULL;
 			parent->last_line_P = lchild->last_line_P;
 			parent->store_var = NULL;
+		}
+		else // - E
+		{
+			exprn_type_cast(lchild, upcast(lchild->type, 0));
+
+			char* var = get_new_var();
+			struct code* new_code = code_new("SIGN_REV", lchild->store_var, NULL, var);
+			lchild->last_line_P->next = new_code;
+
+			parent->type = lchild->type;
+			parent->codeP = lchild->codeP;
+			parent->true_jump_lines = NULL;
+			parent->false_jump_lines = NULL;
+			parent->true_jumpPs = NULL;
+			parent->false_jumpPs = NULL;
+			parent->true_jump = NULL;
+			parent->false_jump = NULL;
+			parent->last_line_P = new_code;
+			parent->store_var = var;
 		}
 
 		return;
