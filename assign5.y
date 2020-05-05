@@ -3,7 +3,9 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <assert.h>
 #include "symbol_table.h"
+#include "expressions.h"
 
 int type; // The current variable declaration type
 struct symbol_table* table = NULL;
@@ -74,37 +76,37 @@ VAR_DEC_LIST: VAR_DEC COMMA VAR_DEC_LIST | VAR_DEC;
 VAR_DEC_GLOBAL: DATA_TYPE {type = $1;} VAR_DEC_LIST;
 
 E: 	E PLUS E
-{exprn_operate($$, $1, $3, PLUS);}
+{exprn_operate($$, $1, $3, "+");}
 | E MINUS E
-{exprn_operate($$, $1, $3, MINUS);}
+{exprn_operate($$, $1, $3, "-");}
 | E MUL E
-{exprn_operate($$, $1, $3, MUL);}
+{exprn_operate($$, $1, $3, "*");}
 | E DIV E
-{exprn_operate($$, $1, $3, DIV);}
+{exprn_operate($$, $1, $3, "/");}
 | E MOD E
-{exprn_operate($$, $1, $3, MOD);}
+{exprn_operate($$, $1, $3, "%");}
 | E LESS E
-{exprn_operate($$, $1, $3, LESS);}
+{exprn_operate($$, $1, $3, "<");}
 | E GREATER E
-{exprn_operate($$, $1, $3, GREATER);}
+{exprn_operate($$, $1, $3, ">");}
 | E LESS_EQUAL E
-{exprn_operate($$, $1, $3, LESS_EQUAL);}
+{exprn_operate($$, $1, $3, "<=");}
 | E GREATER_EQUAL E
-{exprn_operate($$, $1, $3, GREATER_EQUAL);}
+{exprn_operate($$, $1, $3, ">=");}
 | E NOT_EQUAL E
-{exprn_operate($$, $1, $3, NOT_EQUAL);}
+{exprn_operate($$, $1, $3, "!=");}
 | E IS_EQUAL E
-{exprn_operate($$, $1, $3, IS_EQUAL);}
+{exprn_operate($$, $1, $3, "==");}
 | E AND E
-{exprn_operate($$, $1, $3, AND);}
+{exprn_operate($$, $1, $3, "&&");}
 | E OR E
-{exprn_operate($$, $1, $3, OR);}
+{exprn_operate($$, $1, $3, "||");}
 | NOT E 
-{exprn_operate($$, $1, NULL, NOT);}
+{exprn_operate($$, $2, NULL, "!");}
 | LB E RB
-{exprn_operate($$, $1, NULL, LB);}
+{exprn_operate($$, $2, NULL, "()");}
 | MINUS E
-{exprn_operate($$, $1, NULL, -1);}
+{exprn_operate($$, $2, NULL, "-()");}
 | NUM_INT
 {exprn_init_with_int_value($$, $1);}
 | NUM_FLOAT

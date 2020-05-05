@@ -91,13 +91,14 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 14 "assign5.y" /* yacc.c:1909  */
+#line 16 "assign5.y" /* yacc.c:1909  */
 
 	float num_f;
 	int num_i;
 	char* str;
+	struct exprn* EXPRN;
 
-#line 101 "assign5.tab.h" /* yacc.c:1909  */
+#line 102 "assign5.tab.h" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;
