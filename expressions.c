@@ -172,6 +172,61 @@ struct exprn
 	// For ints / floats, last line will be an assignment of store_var
 };
 
+void exprn_init_NULL(struct exprn* exprn)
+{
+	exprn->codeP = NULL;
+	exprn->true_jump_lines = NULL;
+	exprn->false_jump_lines = NULL;
+	exprn->true_jumpPs = NULL;
+	exprn->false_jumpPs = NULL;
+	exprn->true_jump = NULL;
+	exprn->false_jump = NULL;
+	exprn->last_line_P = NULL;
+	exprn->store_var = NULL;
+}
+
+void exprn_init_with_int_value(struct exprn* exprn, int x)
+{
+	char* var = get_new_var();
+	char* str = malloc(sizeof(char) * 30);
+	sprintf(str, "%d", x);
+	struct code* new_code = code_new("assign", str, NULL, var);
+
+	exprn->type = 0;
+	exprn->codeP = new_code;
+	exprn->last_line_P = new_code;
+	exprn->store_var = var;
+}
+
+void exprn_init_with_float_value(struct exprn* exprn, float x)
+{
+	char* var = get_new_var();
+	char* str = malloc(sizeof(char) * 30);
+	sprintf(str, "%f", x);
+	struct code* new_code = code_new("assign", str, NULL, var);
+
+	exprn->type = 1;
+	exprn->codeP = new_code;
+	exprn->last_line_P = new_code;
+	exprn->store_var = var;
+}
+
+void exprn_init_with_name(struct exprn* exprn, char* x, int type)
+{
+	char* user_var = malloc(sizeof(x) + 1);
+	user_var[0] = NULL;
+	strcpy(user_var, "user_");
+	strcpy(user_var, x);
+
+	char* var = get_new_var();
+	struct code* new_code = code_new("assign", user_var, NULL, var);
+
+	exprn->type = type;
+	exprn->codeP = new_code;
+	exprn->last_line_P = new_code;
+	exprn->store_var = var;
+}
+
 int upcast(int a, int b)
 {
 	if (a == b) return a;

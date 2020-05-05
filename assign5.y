@@ -15,6 +15,7 @@ struct symbol_table* table = NULL;
 	float num_f;
 	int num_i;
 	char* str;
+	struct exprn* EXPRN;
 }
 
 %token TYPE_INT TYPE_FLOAT
@@ -28,6 +29,7 @@ struct symbol_table* table = NULL;
 
 %type <num_i> DATA_TYPE 
 %type <num_f> VALUE
+%type <EXPRN> E
 
 %start PROG
 
@@ -72,23 +74,47 @@ VAR_DEC_LIST: VAR_DEC COMMA VAR_DEC_LIST | VAR_DEC;
 VAR_DEC_GLOBAL: DATA_TYPE {type = $1;} VAR_DEC_LIST;
 
 E: 	E PLUS E
+{exprn_operate($$, $1, $3, PLUS);}
 | E MINUS E
+{exprn_operate($$, $1, $3, MINUS);}
 | E MUL E
+{exprn_operate($$, $1, $3, MUL);}
 | E DIV E
+{exprn_operate($$, $1, $3, DIV);}
 | E MOD E
+{exprn_operate($$, $1, $3, MOD);}
 | E LESS E
+{exprn_operate($$, $1, $3, LESS);}
 | E GREATER E
+{exprn_operate($$, $1, $3, GREATER);}
 | E LESS_EQUAL E
+{exprn_operate($$, $1, $3, LESS_EQUAL);}
 | E GREATER_EQUAL E
+{exprn_operate($$, $1, $3, GREATER_EQUAL);}
 | E NOT_EQUAL E
+{exprn_operate($$, $1, $3, NOT_EQUAL);}
 | E IS_EQUAL E
+{exprn_operate($$, $1, $3, IS_EQUAL);}
 | E AND E
+{exprn_operate($$, $1, $3, AND);}
 | E OR E
+{exprn_operate($$, $1, $3, OR);}
 | NOT E 
+{exprn_operate($$, $1, NULL, NOT);}
 | LB E RB
+{exprn_operate($$, $1, NULL, LB);}
 | MINUS E
-| VALUE
+{exprn_operate($$, $1, NULL, -1);}
+| NUM_INT
+{exprn_init_with_int_value($$, $1);}
+| NUM_FLOAT
+{exprn_init_with_float_value($$, $1);}
 | NAME
+{
+	int x = sym_table_search(table, $1);
+	if (x == 0) {printf("Variable %s undeclared\n", $1); exit(1);}
+	exprn_init_with_name($$, $1, x % 10);
+}
 ; 
 
 %%
