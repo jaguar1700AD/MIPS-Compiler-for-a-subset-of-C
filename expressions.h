@@ -110,10 +110,29 @@ void code_list_add_elem(struct code_list* list, struct code* code)
 	list->next = code_list_new(code);
 }
 
-void code_list_join(struct code_list* list1, struct code_list* list2)
+struct code_list* code_list_join(struct code_list* list1, struct code_list* list2)
 {
-	while(list1->next != NULL) list1 = list1->next;
-	list1->next = list2;
+	assert(list1 != NULL && list2 != NULL);
+
+	// struct code_list* new_list = code_list_new(list1->code);
+	// list1 = list1->next;
+	// while(list1 != NULL) 
+	// {
+	// 	code_list_add_elem(new_list, list1->code);
+	// 	list1 = list1->next;
+	// }
+	// while(list2 != NULL) 
+	// {
+	// 	code_list_add_elem(new_list, list2->code);
+	// 	list2 = list2->next;
+	// }
+	// return new_list;
+
+	struct code_list* temp = list1;
+	while(temp->next != NULL) temp = temp->next;
+	temp->next = list2;
+
+	return list1;
 }
 
 void code_list_backpatch(struct code_list* list, char* jump_label)
@@ -149,10 +168,29 @@ void codeP_list_add_elem(struct codeP_list* list, struct code** codeP)
 	list->next = codeP_list_new(codeP);
 }
 
-void codeP_list_join(struct codeP_list* list1, struct codeP_list* list2)
+struct codeP_list* codeP_list_join(struct codeP_list* list1, struct codeP_list* list2)
 {
-	while(list1->next != NULL) list1 = list1->next;
-	list1->next = list2;
+	assert(list1 != NULL && list2 != NULL);
+
+	// struct codeP_list* new_list = codeP_list_new(list1->codeP);
+	// list1 = list1->next;
+	// while(list1 != NULL) 
+	// {
+	// 	code_list_add_elem(new_list, list1->codeP);
+	// 	list1 = list1->next;
+	// }
+	// while(list2 != NULL) 
+	// {
+	// 	code_list_add_elem(new_list, list2->codeP);
+	// 	list2 = list2->next;
+	// }
+	// return new_list;
+
+	struct codeP_list* temp = list1;
+	while(temp->next != NULL) temp = temp->next;
+	temp->next = list2;
+
+	return list1;
 }
 
 void codeP_list_backpatch(struct codeP_list* list, struct code* jump_loc)
@@ -355,7 +393,7 @@ void exprn_operate(struct exprn* parent, struct exprn* lchild, struct exprn* rch
 {
 	if (rchild == NULL)
 	{
-		if (strcmp(op, "!") && strcmp(op, "()"))
+		if (strcmp(op, "!") && strcmp(op, "-()") && strcmp(op, "()"))
 		{
 			printf("Missing one child in operation %s\n", op);
 			exit(1);
@@ -509,6 +547,7 @@ void exprn_operate(struct exprn* parent, struct exprn* lchild, struct exprn* rch
 		parent->type = 2;
 		char* label = get_new_label();
 		struct code* new_code = code_new("label", NULL, NULL, label);
+		lchild->last_line_P->next = new_code;
 		new_code->next = rchild->codeP;
 		rchild->codeP = new_code;
 
@@ -524,10 +563,10 @@ void exprn_operate(struct exprn* parent, struct exprn* lchild, struct exprn* rch
 			codeP_list_backpatch(lchild->true_jumpPs, new_code);
 
 			parent->true_jump_lines = rchild->true_jump_lines;
-			code_list_join(lchild->false_jump_lines, rchild->false_jump_lines);
+			parent->false_jump_lines = code_list_join(lchild->false_jump_lines, rchild->false_jump_lines);
 
 			parent->true_jumpPs = rchild->true_jumpPs;
-			codeP_list_join(lchild->false_jumpPs, rchild->false_jumpPs);
+			parent->false_jumpPs =  codeP_list_join(lchild->false_jumpPs, rchild->false_jumpPs);
 
 			codeP_list_add_elem(parent->true_jumpPs, &(parent->true_jump));
 			codeP_list_add_elem(parent->false_jumpPs, &(parent->false_jump));
@@ -538,10 +577,10 @@ void exprn_operate(struct exprn* parent, struct exprn* lchild, struct exprn* rch
 			codeP_list_backpatch(lchild->false_jumpPs, new_code);
 
 			parent->false_jump_lines = rchild->false_jump_lines;
-			code_list_join(lchild->true_jump_lines, rchild->true_jump_lines);
+			parent->true_jump_lines =  code_list_join(lchild->true_jump_lines, rchild->true_jump_lines);
 
 			parent->false_jumpPs = rchild->false_jumpPs;
-			codeP_list_join(lchild->true_jumpPs, rchild->true_jumpPs);
+			parent->true_jumpPs =  codeP_list_join(lchild->true_jumpPs, rchild->true_jumpPs);
 
 			codeP_list_add_elem(parent->true_jumpPs, &(parent->true_jump));
 			codeP_list_add_elem(parent->false_jumpPs, &(parent->false_jump));
