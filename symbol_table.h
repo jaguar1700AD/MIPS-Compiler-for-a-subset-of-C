@@ -3,10 +3,17 @@
 // #include <string.h>
 // #include <stdbool.h>
 
+int get_data_size(int type)
+{
+	if (type == 0) return 2; // int
+	else return 4; // float
+}
+
 struct variable_list
 {
 	char* name;
 	int type; // 0 -> int, 1 -> float
+	int offset;
 
 	struct variable_list* next;
 };
@@ -15,6 +22,7 @@ struct symbol_table
 {
 	struct variable_list* top;
 	struct symbol_table* parent;
+	int offset;
 };
 
 struct symbol_table* sym_table_new(struct symbol_table* parent)
@@ -22,6 +30,7 @@ struct symbol_table* sym_table_new(struct symbol_table* parent)
 	struct symbol_table* table = malloc(sizeof(struct symbol_table));
 	table->top = NULL;
 	table->parent = parent;
+	table->offset = 0;
 	return table;
 }
 
@@ -63,6 +72,8 @@ void sym_table_insert(struct symbol_table* table, char* name, int type)
 	strcpy(new_var->name, name);
 	new_var->type = type;
 	new_var->next = NULL;
+	new_var->offset = table->offset;
+	table->offset += get_data_size(type);
 
 	if (top != NULL)
 	{
@@ -79,7 +90,7 @@ void sym_table_print(struct symbol_table* table)
 	printf("\n.................................\n");
 	while(top != NULL)
 	{
-		printf("%s, %d\n", top->name, top->type);
+		printf("%s, %d, %d\n", top->name, top->type, top->offset);
 		top = top->next;
 	}
 }

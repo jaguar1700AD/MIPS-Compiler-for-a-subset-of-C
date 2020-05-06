@@ -6,6 +6,7 @@
 #include <assert.h>
 #include "symbol_table.h"
 #include "expressions.h"
+#include "code_store.h"
 
 int type; // The current variable declaration type
 struct symbol_table* table = NULL;
@@ -18,6 +19,7 @@ struct symbol_table* table = NULL;
 	int num_i;
 	char* str;
 	struct exprn* EXPRN;
+	struct code_store* CODE_STORE;
 }
 
 %token TYPE_INT TYPE_FLOAT
@@ -30,8 +32,8 @@ struct symbol_table* table = NULL;
 %token KEY_MAIN KEY_VOID KEY_RETURN KEY_BREAK KEY_DEFAULT KEY_IF KEY_ELSE KEY_SWITCH KEY_CASE KEY_FOR KEY_WHILE
 
 %type <num_i> DATA_TYPE 
-%type <num_f> VALUE
 %type <EXPRN> E
+%type <CODE_STORE> VAR_DEC VAR_DEC_ASSIGN_LIST VAR_DEC_ASSIGN PROG
 
 %start PROG
 
@@ -52,39 +54,56 @@ struct symbol_table* table = NULL;
 
 %%
 
-PROG: VAR_DEC_GLOBAL SEMI PROG | VAR_DEC_GLOBAL SEMI | E;
+PROG: VAR_DEC SEMI PROG 
+{
+	$$ = code_store_concat_init($1, $3);
 
-VALUE: NUM_INT {$$ = $1;} | NUM_FLOAT {$$ = $1;};
+	printf(" \n ....PROG..... \n");
+	code_print($$->startP);
+	printf(" \n ............. \n");
+}
+| VAR_DEC SEMI 
+{
+	$$ = code_store_copy_init($1);
+	printf(" \n ....PROG..... \n");
+	code_print($$->startP);
+	printf(" \n ............. \n");
+};
 
 DATA_TYPE: TYPE_INT {$$ = 0;}| TYPE_FLOAT {$$ = 1;};
 
-VAR_DEC: NAME 
+VAR_DEC_ASSIGN: NAME 
 {
 	if (sym_table_search(table, $1) / 10 == 1){printf("Variable '%s' already declared in current scope\n", $1); exit(1);}
 	sym_table_insert(table, $1, type);
+	$$ = code_store_init(NULL, NULL, NULL);
 } 
-| NAME 
+| NAME EQUAL E
 {
+	exprn_type_cast($3, type);
+	char* var = get_user_var($1);
+	struct code* new_code = code_new("assign", $3->store_var, NULL, var);\
+	$3->last_line_P->next = new_code;
+	$$ = code_store_init($3->codeP, new_code, var);
+
 	if (sym_table_search(table, $1) / 10  == 1){printf("Variable '%s' already declared in current scope\n", $1); exit(1);}
 	sym_table_insert(table, $1, type);
-} 
-EQUAL VALUE 
-{
-	if (type == 0) // int
-	{
-		int x = (int) $4;
-		printf("%s, %d\n", $1, x);
-	}
-	else // float
-	{
-		float x = $4;
-		printf("%s, %f\n", $1, x);	
-	}
 };
 
-VAR_DEC_LIST: VAR_DEC COMMA VAR_DEC_LIST | VAR_DEC;
+VAR_DEC_ASSIGN_LIST: VAR_DEC_ASSIGN COMMA VAR_DEC_ASSIGN_LIST 
+{
+	$$ = code_store_concat_init($1, $3);
+}
+| VAR_DEC_ASSIGN
+{
+	$$ = code_store_copy_init($1);
+};
 
-VAR_DEC_GLOBAL: DATA_TYPE {type = $1;} VAR_DEC_LIST;
+VAR_DEC: DATA_TYPE {type = $1;} VAR_DEC_ASSIGN_LIST
+{
+	$$ = code_store_copy_init($3);
+}
+;
 
 E: 	E PLUS E
 {	

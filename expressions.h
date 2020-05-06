@@ -24,6 +24,15 @@ char* get_new_var()
 	return var;
 }
 
+char* get_user_var(char* x)
+{
+	char* user_var = malloc(sizeof(x) + 1);
+	user_var[0] = '\0';
+	strcat(user_var, "user_");
+	strcat(user_var, x);
+	return user_var;
+}
+
 //-----------------------------------------------------------------------------------------------------------
 
 struct code
@@ -266,10 +275,7 @@ void exprn_init_with_float_value(struct exprn* exprn, float x)
 
 void exprn_init_with_name(struct exprn* exprn, char* x, int type)
 {
-	char* user_var = malloc(sizeof(x) + 1);
-	user_var[0] = '\0';
-	strcat(user_var, "user_");
-	strcat(user_var, x);
+	char* user_var = get_user_var(x);
 
 	char* var = get_new_var();
 	struct code* new_code = code_new("assign", user_var, NULL, var);
