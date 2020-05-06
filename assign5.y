@@ -33,7 +33,7 @@ struct symbol_table* table = NULL;
 
 %type <num_i> DATA_TYPE 
 %type <EXPRN> E
-%type <CODE_STORE> VAR_DEC VAR_DEC_ASSIGN_LIST VAR_DEC_ASSIGN PROG
+%type <CODE_STORE> VAR_DEC VAR_DEC_ASSIGN_LIST VAR_DEC_ASSIGN ASSIGN STATEMENT PROG
 
 %start PROG
 
@@ -54,20 +54,36 @@ struct symbol_table* table = NULL;
 
 %%
 
-PROG: VAR_DEC SEMI PROG 
+PROG: STATEMENT PROG 
 {
-	$$ = code_store_concat_init($1, $3);
+	$$ = code_store_concat_init($1, $2);
 
 	printf(" \n ....PROG..... \n");
 	code_print($$->startP);
 	printf(" \n ............. \n");
 }
-| VAR_DEC SEMI 
+| STATEMENT 
 {
 	$$ = code_store_copy_init($1);
 	printf(" \n ....PROG..... \n");
 	code_print($$->startP);
 	printf(" \n ............. \n");
+};
+
+STATEMENT: 
+VAR_DEC SEMI {$$ = code_store_copy_init($1);}
+|  ASSIGN SEMI {$$ = code_store_copy_init($1);}
+;
+
+ASSIGN: NAME EQUAL E
+{
+	if (sym_table_search(table, $1) / 10  == 0){printf("Variable '%s' not found in current scope\n", $1); exit(1);}
+
+	exprn_type_cast($3, type);
+	char* var = get_user_var($1);
+	struct code* new_code = code_new("assign", $3->store_var, NULL, var);\
+	$3->last_line_P->next = new_code;
+	$$ = code_store_init($3->codeP, new_code, var);
 };
 
 DATA_TYPE: TYPE_INT {$$ = 0;}| TYPE_FLOAT {$$ = 1;};

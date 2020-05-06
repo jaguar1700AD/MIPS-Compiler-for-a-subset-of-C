@@ -1,3 +1,3 @@
 int a;
-float c;
-float b = (a + c) != 2;
+float b = 5, c;
+b = (b + c) != 2;
