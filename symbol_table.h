@@ -3,6 +3,20 @@
 // #include <string.h>
 // #include <stdbool.h>
 
+struct depth_type
+{
+	int depth;
+	int type;
+};
+
+struct depth_type* depth_type_new(int depth, int type)
+{
+	struct depth_type* cont = malloc(sizeof(struct depth_type));
+	cont->depth = depth;
+	cont->type = type;
+	return cont;
+}
+
 int get_data_size(int type)
 {
 	if (type == 0) return 2; // int
@@ -23,6 +37,7 @@ struct symbol_table
 	struct variable_list* top;
 	struct symbol_table* parent;
 	int offset;
+	int depth;
 };
 
 struct symbol_table* sym_table_new(struct symbol_table* parent)
@@ -31,36 +46,30 @@ struct symbol_table* sym_table_new(struct symbol_table* parent)
 	table->top = NULL;
 	table->parent = parent;
 	table->offset = 0;
+	if (parent == NULL) table->depth = 0;
+	else table->depth = parent->depth + 1;
 	return table;
 }
 
-int sym_table_search(struct symbol_table* table, char* name)
+struct depth_type* sym_table_search(struct symbol_table* table, char* name)
 {
 	// x is the type of the found variable
-	// 2x -> variable found in current scope
-	// 1x -> variabe found in some larger scope
-	// 0 -> not found
+	// {depth, type} returned
+	// NULL -> not found
 
-	bool first = true;
+	struct depth_type* cont = malloc(sizeof(struct depth_type));
+
 	while (table != NULL)
 	{
 		struct variable_list* top = table->top;
 		while(top != NULL)
 		{
-			if (first)
-			{
-				if (!strcmp(top->name, name)) return 10 + top->type;
-			}
-			else
-			{
-				if (!strcmp(top->name, name)) return 20 + top->type;
-			}
+			if (!strcmp(top->name, name)) return depth_type_new(table->depth, top->type);
 			top = top->next;
 		}
 		table = table->parent;
-		if (first) first = false;
 	}
-	return 0;
+	return NULL;
 }
 
 void sym_table_insert(struct symbol_table* table, char* name, int type)
@@ -88,6 +97,7 @@ void sym_table_print(struct symbol_table* table)
 {
 	struct variable_list* top = table->top;
 	printf("\n.................................\n");
+	printf("Depth = %d.......\n", table->depth);
 	while(top != NULL)
 	{
 		printf("%s, %d, %d\n", top->name, top->type, top->offset);

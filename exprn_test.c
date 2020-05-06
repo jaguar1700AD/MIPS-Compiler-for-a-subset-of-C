@@ -1,3 +1,7 @@
 int a;
 float b = 5, c;
-b = (b + c) != 2;
+{}
+{
+	int b;
+	b = (b + c) != 2;
+}

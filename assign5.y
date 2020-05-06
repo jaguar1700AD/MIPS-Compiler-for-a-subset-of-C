@@ -10,6 +10,7 @@
 
 int type; // The current variable declaration type
 struct symbol_table* table = NULL;
+struct depth_type* cont;
 
 %}
 
@@ -33,7 +34,7 @@ struct symbol_table* table = NULL;
 
 %type <num_i> DATA_TYPE 
 %type <EXPRN> E
-%type <CODE_STORE> VAR_DEC VAR_DEC_ASSIGN_LIST VAR_DEC_ASSIGN ASSIGN STATEMENT PROG
+%type <CODE_STORE> VAR_DEC VAR_DEC_ASSIGN_LIST VAR_DEC_ASSIGN ASSIGN STATEMENT STATEMENT_LIST BLOCK PROG
 
 %start PROG
 
@@ -54,33 +55,50 @@ struct symbol_table* table = NULL;
 
 %%
 
-PROG: STATEMENT PROG 
+PROG: STATEMENT_LIST
 {
-	$$ = code_store_concat_init($1, $2);
+	$$ = code_store_copy_init($1);
 
 	printf(" \n ....PROG..... \n");
 	code_print($$->startP);
 	printf(" \n ............. \n");
 }
-| STATEMENT 
-{
-	$$ = code_store_copy_init($1);
-	printf(" \n ....PROG..... \n");
-	code_print($$->startP);
-	printf(" \n ............. \n");
-};
+
+STATEMENT_LIST: STATEMENT STATEMENT_LIST {$$ = code_store_concat_init($1, $2);}
+| STATEMENT {$$ = code_store_copy_init($1);}
+;
 
 STATEMENT: 
 VAR_DEC SEMI {$$ = code_store_copy_init($1);}
 |  ASSIGN SEMI {$$ = code_store_copy_init($1);}
+| BLOCK {$$ = code_store_copy_init($1);}
+;
+
+BLOCK: LC RC {$$ = code_store_init(NULL, NULL, NULL);}
+| LC 
+{
+	sym_table_print(table);
+	table = sym_table_new(table);
+}
+STATEMENT_LIST RC 
+{ 
+	$$ = code_store_copy_init($3); 
+	sym_table_print(table);
+	table = table->parent;
+	sym_table_print(table);
+	printf(" \n ....BLOCK..... \n");
+	code_print($$->startP);
+	printf(" \n ............. \n");
+}
 ;
 
 ASSIGN: NAME EQUAL E
 {
-	if (sym_table_search(table, $1) / 10  == 0){printf("Variable '%s' not found in current scope\n", $1); exit(1);}
+	cont = sym_table_search(table, $1);
+	if (cont == NULL){printf("Variable '%s' not found in current scope\n", $1); exit(1);}
 
 	exprn_type_cast($3, type);
-	char* var = get_user_var($1);
+	char* var = get_user_var($1, cont->depth);
 	struct code* new_code = code_new("assign", $3->store_var, NULL, var);\
 	$3->last_line_P->next = new_code;
 	$$ = code_store_init($3->codeP, new_code, var);
@@ -90,19 +108,21 @@ DATA_TYPE: TYPE_INT {$$ = 0;}| TYPE_FLOAT {$$ = 1;};
 
 VAR_DEC_ASSIGN: NAME 
 {
-	if (sym_table_search(table, $1) / 10 == 1){printf("Variable '%s' already declared in current scope\n", $1); exit(1);}
+	cont = sym_table_search(table, $1);
+	if (cont != NULL && cont->depth == table->depth){printf("Variable '%s' already declared in current scope\n", $1); exit(1);}
 	sym_table_insert(table, $1, type);
 	$$ = code_store_init(NULL, NULL, NULL);
 } 
 | NAME EQUAL E
 {
 	exprn_type_cast($3, type);
-	char* var = get_user_var($1);
+	char* var = get_user_var($1, table->depth);
 	struct code* new_code = code_new("assign", $3->store_var, NULL, var);\
 	$3->last_line_P->next = new_code;
 	$$ = code_store_init($3->codeP, new_code, var);
 
-	if (sym_table_search(table, $1) / 10  == 1){printf("Variable '%s' already declared in current scope\n", $1); exit(1);}
+	cont = sym_table_search(table, $1);
+	if (cont != NULL && cont->depth == table->depth){printf("Variable '%s' already declared in current scope\n", $1); exit(1);}
 	sym_table_insert(table, $1, type);
 };
 
@@ -268,9 +288,10 @@ E: 	E PLUS E
 | NAME
 {
 	$$ = exprn_init_null();
-	int x = sym_table_search(table, $1);
-	if (x == 0) {printf("Variable %s undeclared\n", $1); exit(1);}
-	exprn_init_with_name($$, $1, x % 10);
+	cont = sym_table_search(table, $1);
+	if (cont == NULL) {printf("Variable %s undeclared\n", $1); exit(1);}
+	char* user_var = get_user_var($1, cont->depth);
+	exprn_init_with_name($$, user_var, cont->type);
 
 	printf(" \n ....NAME..... \n");
 	code_print($$->codeP);
@@ -296,7 +317,6 @@ int main(int argc, char** argv)
 	type = -1;
 	table = sym_table_new(NULL);;
 	yyparse();
-	sym_table_print(table);
 }
 
 yyerror(const char* s)
