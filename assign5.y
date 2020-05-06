@@ -72,6 +72,56 @@ STATEMENT:
 VAR_DEC SEMI {$$ = code_store_copy_init($1);}
 |  ASSIGN SEMI {$$ = code_store_copy_init($1);}
 | BLOCK {$$ = code_store_copy_init($1);}
+| KEY_IF LB E RB STATEMENT
+{
+	exprn_type_cast($3, 2);
+
+	char* true_label = get_new_label();
+	char* false_label = get_new_label();
+	struct code* true_label_line = code_new("label", NULL, NULL, true_label);
+	struct code* false_label_line = code_new("label", NULL, NULL, false_label);
+
+	// Insert new codes in between old codes
+	assert($3->last_line_P->next == NULL && $5->endP->next == NULL);
+	$3->last_line_P->next = true_label_line;
+	true_label_line->next = $5->startP;
+	$5->endP->next = false_label_line;
+
+	code_list_backpatch($3->true_jump_lines, true_label);
+	code_list_backpatch($3->false_jump_lines, false_label);
+	codeP_list_backpatch($3->true_jumpPs, true_label_line);
+	codeP_list_backpatch($3->false_jumpPs, false_label_line);
+	
+	$$ = code_store_init($3->codeP, false_label_line, NULL);
+}
+| KEY_IF LB E RB STATEMENT KEY_ELSE STATEMENT
+{
+	exprn_type_cast($3, 2);
+
+	char* true_label = get_new_label();
+	char* false_label = get_new_label();
+	char* final_label = get_new_label();
+	struct code* true_label_line = code_new("label", NULL, NULL, true_label);
+	struct code* false_label_line = code_new("label", NULL, NULL, false_label);
+	struct code* final_label_line = code_new("label", NULL, NULL, final_label);
+	struct code* jump_line = code_new("goto", NULL, NULL, final_label);
+
+	// Insert new codes in between old codes
+	assert($3->last_line_P->next == NULL && $5->endP->next == NULL && $7->endP->next == NULL);
+	$3->last_line_P->next = true_label_line;
+	true_label_line->next = $5->startP;
+	$5->endP->next = jump_line;
+	jump_line->next = false_label_line;
+	false_label_line->next = $7->startP;
+	$7->endP->next = final_label_line;
+
+	code_list_backpatch($3->true_jump_lines, true_label);
+	code_list_backpatch($3->false_jump_lines, false_label);
+	codeP_list_backpatch($3->true_jumpPs, true_label_line);
+	codeP_list_backpatch($3->false_jumpPs, false_label_line);
+	
+	$$ = code_store_init($3->codeP, final_label_line, NULL);
+}
 ;
 
 BLOCK: LC RC {$$ = code_store_init(NULL, NULL, NULL);}
