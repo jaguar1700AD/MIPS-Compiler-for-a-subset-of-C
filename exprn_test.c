@@ -1,6 +1,4 @@
-int x, y;
-while (x < 10) 
+for(int i = 0; i < 2; i = i + 1)
 {
-	x = x + 1;
-	int y = x + 2;
+	i = i * 2;
 }

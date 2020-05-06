@@ -37,7 +37,7 @@ struct depth_type* cont;
 
 %type <num_i> DATA_TYPE 
 %type <EXPRN> E
-%type <CODE_STORE> VAR_DEC VAR_DEC_ASSIGN_LIST VAR_DEC_ASSIGN ASSIGN STATEMENT STATEMENT_LIST BLOCK SWITCH PROG
+%type <CODE_STORE> VAR_DEC VAR_DEC_ASSIGN_LIST VAR_DEC_ASSIGN ASSIGN STATEMENT STATEMENT_LIST BLOCK SWITCH FOR_HELPER PROG
 %type <HCASE> CASE DEFAULT
 %type <HCASE_LIST> CASE_LIST
 
@@ -145,12 +145,44 @@ PROG: STATEMENT_LIST
 	printf(" \n ............. \n");
 }
 
+FOR_HELPER: LC STATEMENT_LIST RC {$$ = code_store_copy_init($2);}
+
 STATEMENT_LIST: STATEMENT STATEMENT_LIST {$$ = code_store_concat_init($1, $2);}
 | STATEMENT {$$ = code_store_copy_init($1);}
 ;
 
 STATEMENT: 
-KEY_WHILE LB E RB STATEMENT
+KEY_FOR LB {table = sym_table_new(table);} STATEMENT E SEMI ASSIGN RB FOR_HELPER
+{
+	table = table->parent;
+	exprn_type_cast($5, 2);
+
+	char* true_label = get_new_label();
+	char* false_label = get_new_label();
+	char* begin_label = get_new_label();
+	struct code* true_label_line = code_new("label", NULL, NULL, true_label);
+	struct code* false_label_line = code_new("label", NULL, NULL, false_label);
+	struct code* begin_label_line = code_new("label", NULL, NULL, begin_label);
+	struct code* jump_line = code_new("goto", NULL, NULL, begin_label);
+
+	// Insert new codes in between old codes
+	assert($5->last_line_P->next == NULL && $4->endP->next == NULL && $7->endP->next == NULL && $9->endP->next == NULL);
+	$4->endP->next = begin_label_line;
+	begin_label_line->next = $5->codeP;
+	$5->last_line_P->next = true_label_line;
+	true_label_line->next = $9->startP;
+	$9->endP->next = $7->startP;
+	$7->endP->next = jump_line;
+	jump_line->next = false_label_line;
+
+	code_list_backpatch($5->true_jump_lines, true_label);
+	code_list_backpatch($5->false_jump_lines, false_label);
+	codeP_list_backpatch($5->true_jumpPs, true_label_line);
+	codeP_list_backpatch($5->false_jumpPs, false_label_line);
+	
+	$$ = code_store_init($4->startP, false_label_line, NULL);
+}
+| KEY_WHILE LB E RB STATEMENT
 {
 	exprn_type_cast($3, 2);
 
