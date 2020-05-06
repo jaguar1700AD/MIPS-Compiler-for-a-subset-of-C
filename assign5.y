@@ -7,6 +7,7 @@
 #include "symbol_table.h"
 #include "expressions.h"
 #include "code_store.h"
+#include "case_helper.h"
 
 int type; // The current variable declaration type
 struct symbol_table* table = NULL;
@@ -21,6 +22,8 @@ struct depth_type* cont;
 	char* str;
 	struct exprn* EXPRN;
 	struct code_store* CODE_STORE;
+	struct Hcase* HCASE;
+	struct Hcase_list* HCASE_LIST;
 }
 
 %token TYPE_INT TYPE_FLOAT
@@ -34,7 +37,9 @@ struct depth_type* cont;
 
 %type <num_i> DATA_TYPE 
 %type <EXPRN> E
-%type <CODE_STORE> VAR_DEC VAR_DEC_ASSIGN_LIST VAR_DEC_ASSIGN ASSIGN STATEMENT STATEMENT_LIST BLOCK PROG
+%type <CODE_STORE> VAR_DEC VAR_DEC_ASSIGN_LIST VAR_DEC_ASSIGN ASSIGN STATEMENT STATEMENT_LIST BLOCK SWITCH PROG
+%type <HCASE> CASE DEFAULT
+%type <HCASE_LIST> CASE_LIST
 
 %start PROG
 
@@ -55,6 +60,82 @@ struct depth_type* cont;
 
 %%
 
+CASE: KEY_CASE NUM_INT COLON STATEMENT_LIST
+{
+	char* label = get_new_label();
+	struct code* new_code = code_new("label", NULL, NULL, label);
+	new_code->next = $4->startP;
+	$$ = Hcase_new(label, $2, new_code, $4->endP);
+
+	printf(" \n ....CASE..... \n");
+	code_print($$->startP);
+	printf(" \n ............. \n");
+}
+| KEY_CASE NUM_INT COLON
+{
+	char* label = get_new_label();
+	struct code* new_code = code_new("label", NULL, NULL, label);
+	$$ = Hcase_new(label, $2, new_code, new_code);
+
+	printf(" \n ....CASE..... \n");
+	code_print($$->startP);
+	printf(" \n ............. \n");
+};
+
+DEFAULT: KEY_DEFAULT COLON STATEMENT_LIST
+{
+	char* label = get_new_label();
+	struct code* new_code = code_new("label", NULL, NULL, label);
+	new_code->next = $3->startP;
+	$$ = Hcase_new(label, -1, new_code, $3->endP);
+}
+| KEY_DEFAULT COLON
+{
+	char* label = get_new_label();
+	struct code* new_code = code_new("label", NULL, NULL, label);
+	$$ = Hcase_new(label, -1, new_code, new_code);
+}
+|
+{
+	char* label = get_new_label();
+	struct code* new_code = code_new("label", NULL, NULL, label);
+	$$ = Hcase_new(label, -1, new_code, new_code);
+}
+;
+
+CASE_LIST: CASE CASE_LIST
+{
+	char temp[10];
+	sprintf(temp, "%d", $1->a);
+	struct code* new_code = code_new("!=", NULL, temp, $2->start_label);
+	new_code->next = $1->startP->next;
+	$1->startP->next = new_code;
+	struct code_list* new_list = code_list_new(new_code);
+	new_list->next = $2->var_codes;
+	while($1->endP->next != NULL) $1->endP = $1->endP->next;
+	$1->endP->next = $2->startP;
+	$$ = Hcase_list_new($1->label, new_list, $2->default_jump_code, $1->startP, $2->endP);
+}
+| CASE
+{
+	char temp[10];
+	sprintf(temp, "%d", $1->a);
+	struct code* new_code = code_new("!=", NULL, temp, NULL);
+	new_code->next = $1->startP->next;
+	$1->startP->next = new_code;
+	while($1->endP->next != NULL) $1->endP = $1->endP->next;
+	$$ = Hcase_list_new($1->label, code_list_new(new_code), new_code, $1->startP, $1->endP);
+};
+
+SWITCH: KEY_SWITCH LB E RB LC {table = sym_table_new(table);} CASE_LIST DEFAULT RC
+{
+	exprn_type_cast($3, 0);
+	Hcase_backpatch($7, $3->store_var, $8->label);
+	$3->last_line_P->next = $7->startP;
+	$7->endP->next = $8->startP;
+	$$ = code_store_init($3->codeP, $8->endP, NULL);
+};
+
 PROG: STATEMENT_LIST
 {
 	$$ = code_store_copy_init($1);
@@ -68,8 +149,8 @@ STATEMENT_LIST: STATEMENT STATEMENT_LIST {$$ = code_store_concat_init($1, $2);}
 | STATEMENT {$$ = code_store_copy_init($1);}
 ;
 
-STATEMENT: 
-VAR_DEC SEMI {$$ = code_store_copy_init($1);}
+STATEMENT: SWITCH
+| VAR_DEC SEMI {$$ = code_store_copy_init($1);}
 |  ASSIGN SEMI {$$ = code_store_copy_init($1);}
 | BLOCK {$$ = code_store_copy_init($1);}
 | KEY_IF LB E RB STATEMENT

@@ -1,4 +1,6 @@
-int a;
-if (a == 2) a = a + 1;
-else if (a == 3) a = a - 1;
-else a = a * 9;
+int x;
+switch(x)
+{
+	case 1: 
+	case 2: x = 7;
+}

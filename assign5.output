@@ -1,0 +1,1529 @@
+Terminals unused in grammar
+
+   KEY_MAIN
+   KEY_VOID
+   KEY_RETURN
+   KEY_BREAK
+   KEY_FOR
+   KEY_WHILE
+
+
+State 73 conflicts: 1 shift/reduce
+
+
+Grammar
+
+    0 $accept: PROG $end
+
+    1 CASE: KEY_CASE NUM_INT COLON STATEMENT_LIST
+    2     | KEY_CASE NUM_INT COLON
+
+    3 DEFAULT: KEY_DEFAULT COLON STATEMENT_LIST
+    4        | KEY_DEFAULT COLON
+    5        | %empty
+
+    6 CASE_LIST: CASE CASE_LIST
+    7          | CASE
+
+    8 $@1: %empty
+
+    9 SWITCH: KEY_SWITCH LB E RB LC $@1 CASE_LIST DEFAULT RC
+
+   10 PROG: STATEMENT_LIST
+
+   11 STATEMENT_LIST: STATEMENT STATEMENT_LIST
+   12               | STATEMENT
+
+   13 STATEMENT: SWITCH
+   14          | VAR_DEC SEMI
+   15          | ASSIGN SEMI
+   16          | BLOCK
+   17          | KEY_IF LB E RB STATEMENT
+   18          | KEY_IF LB E RB STATEMENT KEY_ELSE STATEMENT
+
+   19 BLOCK: LC RC
+
+   20 $@2: %empty
+
+   21 BLOCK: LC $@2 STATEMENT_LIST RC
+
+   22 ASSIGN: NAME EQUAL E
+
+   23 DATA_TYPE: TYPE_INT
+   24          | TYPE_FLOAT
+
+   25 VAR_DEC_ASSIGN: NAME
+   26               | NAME EQUAL E
+
+   27 VAR_DEC_ASSIGN_LIST: VAR_DEC_ASSIGN COMMA VAR_DEC_ASSIGN_LIST
+   28                    | VAR_DEC_ASSIGN
+
+   29 $@3: %empty
+
+   30 VAR_DEC: DATA_TYPE $@3 VAR_DEC_ASSIGN_LIST
+
+   31 E: E PLUS E
+   32  | E MINUS E
+   33  | E MUL E
+   34  | E DIV E
+   35  | E MOD E
+   36  | E LESS E
+   37  | E GREATER E
+   38  | E LESS_EQUAL E
+   39  | E GREATER_EQUAL E
+   40  | E NOT_EQUAL E
+   41  | E IS_EQUAL E
+   42  | E AND E
+   43  | E OR E
+   44  | NOT E
+   45  | LB E RB
+   46  | MINUS E
+   47  | NUM_INT
+   48  | NUM_FLOAT
+   49  | NAME
+
+
+Terminals, with rules where they appear
+
+$end (0) 0
+error (256)
+TYPE_INT (258) 23
+TYPE_FLOAT (259) 24
+NAME (260) 22 25 26 49
+NUM_INT (261) 1 2 47
+NUM_FLOAT (262) 48
+LESS (263) 36
+GREATER (264) 37
+EQUAL (265) 22 26
+LESS_EQUAL (266) 38
+GREATER_EQUAL (267) 39
+NOT_EQUAL (268) 40
+IS_EQUAL (269) 41
+AND (270) 42
+OR (271) 43
+NOT (272) 44
+PLUS (273) 31
+MINUS (274) 32 46
+MUL (275) 33
+DIV (276) 34
+MOD (277) 35
+SEMI (278) 14 15
+COMMA (279) 27
+COLON (280) 1 2 3 4
+LB (281) 9 17 18 45
+RB (282) 9 17 18 45
+LC (283) 9 19 21
+RC (284) 9 19 21
+KEY_MAIN (285)
+KEY_VOID (286)
+KEY_RETURN (287)
+KEY_BREAK (288)
+KEY_DEFAULT (289) 3 4
+KEY_IF (290) 17 18
+KEY_ELSE (291) 18
+KEY_SWITCH (292) 9
+KEY_CASE (293) 1 2
+KEY_FOR (294)
+KEY_WHILE (295)
+
+
+Nonterminals, with rules where they appear
+
+$accept (41)
+    on left: 0
+CASE (42)
+    on left: 1 2, on right: 6 7
+DEFAULT (43)
+    on left: 3 4 5, on right: 9
+CASE_LIST (44)
+    on left: 6 7, on right: 6 9
+SWITCH (45)
+    on left: 9, on right: 13
+$@1 (46)
+    on left: 8, on right: 9
+PROG (47)
+    on left: 10, on right: 0
+STATEMENT_LIST (48)
+    on left: 11 12, on right: 1 3 10 11 21
+STATEMENT (49)
+    on left: 13 14 15 16 17 18, on right: 11 12 17 18
+BLOCK (50)
+    on left: 19 21, on right: 16
+$@2 (51)
+    on left: 20, on right: 21
+ASSIGN (52)
+    on left: 22, on right: 15
+DATA_TYPE (53)
+    on left: 23 24, on right: 30
+VAR_DEC_ASSIGN (54)
+    on left: 25 26, on right: 27 28
+VAR_DEC_ASSIGN_LIST (55)
+    on left: 27 28, on right: 27 30
+VAR_DEC (56)
+    on left: 30, on right: 14
+$@3 (57)
+    on left: 29, on right: 30
+E (58)
+    on left: 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48
+    49, on right: 9 17 18 22 26 31 32 33 34 35 36 37 38 39 40 41 42
+    43 44 45 46
+
+
+State 0
+
+    0 $accept: . PROG $end
+
+    TYPE_INT    shift, and go to state 1
+    TYPE_FLOAT  shift, and go to state 2
+    NAME        shift, and go to state 3
+    LC          shift, and go to state 4
+    KEY_IF      shift, and go to state 5
+    KEY_SWITCH  shift, and go to state 6
+
+    SWITCH          go to state 7
+    PROG            go to state 8
+    STATEMENT_LIST  go to state 9
+    STATEMENT       go to state 10
+    BLOCK           go to state 11
+    ASSIGN          go to state 12
+    DATA_TYPE       go to state 13
+    VAR_DEC         go to state 14
+
+
+State 1
+
+   23 DATA_TYPE: TYPE_INT .
+
+    $default  reduce using rule 23 (DATA_TYPE)
+
+
+State 2
+
+   24 DATA_TYPE: TYPE_FLOAT .
+
+    $default  reduce using rule 24 (DATA_TYPE)
+
+
+State 3
+
+   22 ASSIGN: NAME . EQUAL E
+
+    EQUAL  shift, and go to state 15
+
+
+State 4
+
+   19 BLOCK: LC . RC
+   21      | LC . $@2 STATEMENT_LIST RC
+
+    RC  shift, and go to state 16
+
+    $default  reduce using rule 20 ($@2)
+
+    $@2  go to state 17
+
+
+State 5
+
+   17 STATEMENT: KEY_IF . LB E RB STATEMENT
+   18          | KEY_IF . LB E RB STATEMENT KEY_ELSE STATEMENT
+
+    LB  shift, and go to state 18
+
+
+State 6
+
+    9 SWITCH: KEY_SWITCH . LB E RB LC $@1 CASE_LIST DEFAULT RC
+
+    LB  shift, and go to state 19
+
+
+State 7
+
+   13 STATEMENT: SWITCH .
+
+    $default  reduce using rule 13 (STATEMENT)
+
+
+State 8
+
+    0 $accept: PROG . $end
+
+    $end  shift, and go to state 20
+
+
+State 9
+
+   10 PROG: STATEMENT_LIST .
+
+    $default  reduce using rule 10 (PROG)
+
+
+State 10
+
+   11 STATEMENT_LIST: STATEMENT . STATEMENT_LIST
+   12               | STATEMENT .
+
+    TYPE_INT    shift, and go to state 1
+    TYPE_FLOAT  shift, and go to state 2
+    NAME        shift, and go to state 3
+    LC          shift, and go to state 4
+    KEY_IF      shift, and go to state 5
+    KEY_SWITCH  shift, and go to state 6
+
+    $default  reduce using rule 12 (STATEMENT_LIST)
+
+    SWITCH          go to state 7
+    STATEMENT_LIST  go to state 21
+    STATEMENT       go to state 10
+    BLOCK           go to state 11
+    ASSIGN          go to state 12
+    DATA_TYPE       go to state 13
+    VAR_DEC         go to state 14
+
+
+State 11
+
+   16 STATEMENT: BLOCK .
+
+    $default  reduce using rule 16 (STATEMENT)
+
+
+State 12
+
+   15 STATEMENT: ASSIGN . SEMI
+
+    SEMI  shift, and go to state 22
+
+
+State 13
+
+   30 VAR_DEC: DATA_TYPE . $@3 VAR_DEC_ASSIGN_LIST
+
+    $default  reduce using rule 29 ($@3)
+
+    $@3  go to state 23
+
+
+State 14
+
+   14 STATEMENT: VAR_DEC . SEMI
+
+    SEMI  shift, and go to state 24
+
+
+State 15
+
+   22 ASSIGN: NAME EQUAL . E
+
+    NAME       shift, and go to state 25
+    NUM_INT    shift, and go to state 26
+    NUM_FLOAT  shift, and go to state 27
+    NOT        shift, and go to state 28
+    MINUS      shift, and go to state 29
+    LB         shift, and go to state 30
+
+    E  go to state 31
+
+
+State 16
+
+   19 BLOCK: LC RC .
+
+    $default  reduce using rule 19 (BLOCK)
+
+
+State 17
+
+   21 BLOCK: LC $@2 . STATEMENT_LIST RC
+
+    TYPE_INT    shift, and go to state 1
+    TYPE_FLOAT  shift, and go to state 2
+    NAME        shift, and go to state 3
+    LC          shift, and go to state 4
+    KEY_IF      shift, and go to state 5
+    KEY_SWITCH  shift, and go to state 6
+
+    SWITCH          go to state 7
+    STATEMENT_LIST  go to state 32
+    STATEMENT       go to state 10
+    BLOCK           go to state 11
+    ASSIGN          go to state 12
+    DATA_TYPE       go to state 13
+    VAR_DEC         go to state 14
+
+
+State 18
+
+   17 STATEMENT: KEY_IF LB . E RB STATEMENT
+   18          | KEY_IF LB . E RB STATEMENT KEY_ELSE STATEMENT
+
+    NAME       shift, and go to state 25
+    NUM_INT    shift, and go to state 26
+    NUM_FLOAT  shift, and go to state 27
+    NOT        shift, and go to state 28
+    MINUS      shift, and go to state 29
+    LB         shift, and go to state 30
+
+    E  go to state 33
+
+
+State 19
+
+    9 SWITCH: KEY_SWITCH LB . E RB LC $@1 CASE_LIST DEFAULT RC
+
+    NAME       shift, and go to state 25
+    NUM_INT    shift, and go to state 26
+    NUM_FLOAT  shift, and go to state 27
+    NOT        shift, and go to state 28
+    MINUS      shift, and go to state 29
+    LB         shift, and go to state 30
+
+    E  go to state 34
+
+
+State 20
+
+    0 $accept: PROG $end .
+
+    $default  accept
+
+
+State 21
+
+   11 STATEMENT_LIST: STATEMENT STATEMENT_LIST .
+
+    $default  reduce using rule 11 (STATEMENT_LIST)
+
+
+State 22
+
+   15 STATEMENT: ASSIGN SEMI .
+
+    $default  reduce using rule 15 (STATEMENT)
+
+
+State 23
+
+   30 VAR_DEC: DATA_TYPE $@3 . VAR_DEC_ASSIGN_LIST
+
+    NAME  shift, and go to state 35
+
+    VAR_DEC_ASSIGN       go to state 36
+    VAR_DEC_ASSIGN_LIST  go to state 37
+
+
+State 24
+
+   14 STATEMENT: VAR_DEC SEMI .
+
+    $default  reduce using rule 14 (STATEMENT)
+
+
+State 25
+
+   49 E: NAME .
+
+    $default  reduce using rule 49 (E)
+
+
+State 26
+
+   47 E: NUM_INT .
+
+    $default  reduce using rule 47 (E)
+
+
+State 27
+
+   48 E: NUM_FLOAT .
+
+    $default  reduce using rule 48 (E)
+
+
+State 28
+
+   44 E: NOT . E
+
+    NAME       shift, and go to state 25
+    NUM_INT    shift, and go to state 26
+    NUM_FLOAT  shift, and go to state 27
+    NOT        shift, and go to state 28
+    MINUS      shift, and go to state 29
+    LB         shift, and go to state 30
+
+    E  go to state 38
+
+
+State 29
+
+   46 E: MINUS . E
+
+    NAME       shift, and go to state 25
+    NUM_INT    shift, and go to state 26
+    NUM_FLOAT  shift, and go to state 27
+    NOT        shift, and go to state 28
+    MINUS      shift, and go to state 29
+    LB         shift, and go to state 30
+
+    E  go to state 39
+
+
+State 30
+
+   45 E: LB . E RB
+
+    NAME       shift, and go to state 25
+    NUM_INT    shift, and go to state 26
+    NUM_FLOAT  shift, and go to state 27
+    NOT        shift, and go to state 28
+    MINUS      shift, and go to state 29
+    LB         shift, and go to state 30
+
+    E  go to state 40
+
+
+State 31
+
+   22 ASSIGN: NAME EQUAL E .
+   31 E: E . PLUS E
+   32  | E . MINUS E
+   33  | E . MUL E
+   34  | E . DIV E
+   35  | E . MOD E
+   36  | E . LESS E
+   37  | E . GREATER E
+   38  | E . LESS_EQUAL E
+   39  | E . GREATER_EQUAL E
+   40  | E . NOT_EQUAL E
+   41  | E . IS_EQUAL E
+   42  | E . AND E
+   43  | E . OR E
+
+    LESS           shift, and go to state 41
+    GREATER        shift, and go to state 42
+    LESS_EQUAL     shift, and go to state 43
+    GREATER_EQUAL  shift, and go to state 44
+    NOT_EQUAL      shift, and go to state 45
+    IS_EQUAL       shift, and go to state 46
+    AND            shift, and go to state 47
+    OR             shift, and go to state 48
+    PLUS           shift, and go to state 49
+    MINUS          shift, and go to state 50
+    MUL            shift, and go to state 51
+    DIV            shift, and go to state 52
+    MOD            shift, and go to state 53
+
+    $default  reduce using rule 22 (ASSIGN)
+
+
+State 32
+
+   21 BLOCK: LC $@2 STATEMENT_LIST . RC
+
+    RC  shift, and go to state 54
+
+
+State 33
+
+   17 STATEMENT: KEY_IF LB E . RB STATEMENT
+   18          | KEY_IF LB E . RB STATEMENT KEY_ELSE STATEMENT
+   31 E: E . PLUS E
+   32  | E . MINUS E
+   33  | E . MUL E
+   34  | E . DIV E
+   35  | E . MOD E
+   36  | E . LESS E
+   37  | E . GREATER E
+   38  | E . LESS_EQUAL E
+   39  | E . GREATER_EQUAL E
+   40  | E . NOT_EQUAL E
+   41  | E . IS_EQUAL E
+   42  | E . AND E
+   43  | E . OR E
+
+    LESS           shift, and go to state 41
+    GREATER        shift, and go to state 42
+    LESS_EQUAL     shift, and go to state 43
+    GREATER_EQUAL  shift, and go to state 44
+    NOT_EQUAL      shift, and go to state 45
+    IS_EQUAL       shift, and go to state 46
+    AND            shift, and go to state 47
+    OR             shift, and go to state 48
+    PLUS           shift, and go to state 49
+    MINUS          shift, and go to state 50
+    MUL            shift, and go to state 51
+    DIV            shift, and go to state 52
+    MOD            shift, and go to state 53
+    RB             shift, and go to state 55
+
+
+State 34
+
+    9 SWITCH: KEY_SWITCH LB E . RB LC $@1 CASE_LIST DEFAULT RC
+   31 E: E . PLUS E
+   32  | E . MINUS E
+   33  | E . MUL E
+   34  | E . DIV E
+   35  | E . MOD E
+   36  | E . LESS E
+   37  | E . GREATER E
+   38  | E . LESS_EQUAL E
+   39  | E . GREATER_EQUAL E
+   40  | E . NOT_EQUAL E
+   41  | E . IS_EQUAL E
+   42  | E . AND E
+   43  | E . OR E
+
+    LESS           shift, and go to state 41
+    GREATER        shift, and go to state 42
+    LESS_EQUAL     shift, and go to state 43
+    GREATER_EQUAL  shift, and go to state 44
+    NOT_EQUAL      shift, and go to state 45
+    IS_EQUAL       shift, and go to state 46
+    AND            shift, and go to state 47
+    OR             shift, and go to state 48
+    PLUS           shift, and go to state 49
+    MINUS          shift, and go to state 50
+    MUL            shift, and go to state 51
+    DIV            shift, and go to state 52
+    MOD            shift, and go to state 53
+    RB             shift, and go to state 56
+
+
+State 35
+
+   25 VAR_DEC_ASSIGN: NAME .
+   26               | NAME . EQUAL E
+
+    EQUAL  shift, and go to state 57
+
+    $default  reduce using rule 25 (VAR_DEC_ASSIGN)
+
+
+State 36
+
+   27 VAR_DEC_ASSIGN_LIST: VAR_DEC_ASSIGN . COMMA VAR_DEC_ASSIGN_LIST
+   28                    | VAR_DEC_ASSIGN .
+
+    COMMA  shift, and go to state 58
+
+    $default  reduce using rule 28 (VAR_DEC_ASSIGN_LIST)
+
+
+State 37
+
+   30 VAR_DEC: DATA_TYPE $@3 VAR_DEC_ASSIGN_LIST .
+
+    $default  reduce using rule 30 (VAR_DEC)
+
+
+State 38
+
+   31 E: E . PLUS E
+   32  | E . MINUS E
+   33  | E . MUL E
+   34  | E . DIV E
+   35  | E . MOD E
+   36  | E . LESS E
+   37  | E . GREATER E
+   38  | E . LESS_EQUAL E
+   39  | E . GREATER_EQUAL E
+   40  | E . NOT_EQUAL E
+   41  | E . IS_EQUAL E
+   42  | E . AND E
+   43  | E . OR E
+   44  | NOT E .
+
+    LESS           shift, and go to state 41
+    GREATER        shift, and go to state 42
+    LESS_EQUAL     shift, and go to state 43
+    GREATER_EQUAL  shift, and go to state 44
+    NOT_EQUAL      shift, and go to state 45
+    PLUS           shift, and go to state 49
+    MINUS          shift, and go to state 50
+    MUL            shift, and go to state 51
+    DIV            shift, and go to state 52
+    MOD            shift, and go to state 53
+
+    $default  reduce using rule 44 (E)
+
+
+State 39
+
+   31 E: E . PLUS E
+   32  | E . MINUS E
+   33  | E . MUL E
+   34  | E . DIV E
+   35  | E . MOD E
+   36  | E . LESS E
+   37  | E . GREATER E
+   38  | E . LESS_EQUAL E
+   39  | E . GREATER_EQUAL E
+   40  | E . NOT_EQUAL E
+   41  | E . IS_EQUAL E
+   42  | E . AND E
+   43  | E . OR E
+   46  | MINUS E .
+
+    MUL  shift, and go to state 51
+    DIV  shift, and go to state 52
+    MOD  shift, and go to state 53
+
+    $default  reduce using rule 46 (E)
+
+
+State 40
+
+   31 E: E . PLUS E
+   32  | E . MINUS E
+   33  | E . MUL E
+   34  | E . DIV E
+   35  | E . MOD E
+   36  | E . LESS E
+   37  | E . GREATER E
+   38  | E . LESS_EQUAL E
+   39  | E . GREATER_EQUAL E
+   40  | E . NOT_EQUAL E
+   41  | E . IS_EQUAL E
+   42  | E . AND E
+   43  | E . OR E
+   45  | LB E . RB
+
+    LESS           shift, and go to state 41
+    GREATER        shift, and go to state 42
+    LESS_EQUAL     shift, and go to state 43
+    GREATER_EQUAL  shift, and go to state 44
+    NOT_EQUAL      shift, and go to state 45
+    IS_EQUAL       shift, and go to state 46
+    AND            shift, and go to state 47
+    OR             shift, and go to state 48
+    PLUS           shift, and go to state 49
+    MINUS          shift, and go to state 50
+    MUL            shift, and go to state 51
+    DIV            shift, and go to state 52
+    MOD            shift, and go to state 53
+    RB             shift, and go to state 59
+
+
+State 41
+
+   36 E: E LESS . E
+
+    NAME       shift, and go to state 25
+    NUM_INT    shift, and go to state 26
+    NUM_FLOAT  shift, and go to state 27
+    NOT        shift, and go to state 28
+    MINUS      shift, and go to state 29
+    LB         shift, and go to state 30
+
+    E  go to state 60
+
+
+State 42
+
+   37 E: E GREATER . E
+
+    NAME       shift, and go to state 25
+    NUM_INT    shift, and go to state 26
+    NUM_FLOAT  shift, and go to state 27
+    NOT        shift, and go to state 28
+    MINUS      shift, and go to state 29
+    LB         shift, and go to state 30
+
+    E  go to state 61
+
+
+State 43
+
+   38 E: E LESS_EQUAL . E
+
+    NAME       shift, and go to state 25
+    NUM_INT    shift, and go to state 26
+    NUM_FLOAT  shift, and go to state 27
+    NOT        shift, and go to state 28
+    MINUS      shift, and go to state 29
+    LB         shift, and go to state 30
+
+    E  go to state 62
+
+
+State 44
+
+   39 E: E GREATER_EQUAL . E
+
+    NAME       shift, and go to state 25
+    NUM_INT    shift, and go to state 26
+    NUM_FLOAT  shift, and go to state 27
+    NOT        shift, and go to state 28
+    MINUS      shift, and go to state 29
+    LB         shift, and go to state 30
+
+    E  go to state 63
+
+
+State 45
+
+   40 E: E NOT_EQUAL . E
+
+    NAME       shift, and go to state 25
+    NUM_INT    shift, and go to state 26
+    NUM_FLOAT  shift, and go to state 27
+    NOT        shift, and go to state 28
+    MINUS      shift, and go to state 29
+    LB         shift, and go to state 30
+
+    E  go to state 64
+
+
+State 46
+
+   41 E: E IS_EQUAL . E
+
+    NAME       shift, and go to state 25
+    NUM_INT    shift, and go to state 26
+    NUM_FLOAT  shift, and go to state 27
+    NOT        shift, and go to state 28
+    MINUS      shift, and go to state 29
+    LB         shift, and go to state 30
+
+    E  go to state 65
+
+
+State 47
+
+   42 E: E AND . E
+
+    NAME       shift, and go to state 25
+    NUM_INT    shift, and go to state 26
+    NUM_FLOAT  shift, and go to state 27
+    NOT        shift, and go to state 28
+    MINUS      shift, and go to state 29
+    LB         shift, and go to state 30
+
+    E  go to state 66
+
+
+State 48
+
+   43 E: E OR . E
+
+    NAME       shift, and go to state 25
+    NUM_INT    shift, and go to state 26
+    NUM_FLOAT  shift, and go to state 27
+    NOT        shift, and go to state 28
+    MINUS      shift, and go to state 29
+    LB         shift, and go to state 30
+
+    E  go to state 67
+
+
+State 49
+
+   31 E: E PLUS . E
+
+    NAME       shift, and go to state 25
+    NUM_INT    shift, and go to state 26
+    NUM_FLOAT  shift, and go to state 27
+    NOT        shift, and go to state 28
+    MINUS      shift, and go to state 29
+    LB         shift, and go to state 30
+
+    E  go to state 68
+
+
+State 50
+
+   32 E: E MINUS . E
+
+    NAME       shift, and go to state 25
+    NUM_INT    shift, and go to state 26
+    NUM_FLOAT  shift, and go to state 27
+    NOT        shift, and go to state 28
+    MINUS      shift, and go to state 29
+    LB         shift, and go to state 30
+
+    E  go to state 69
+
+
+State 51
+
+   33 E: E MUL . E
+
+    NAME       shift, and go to state 25
+    NUM_INT    shift, and go to state 26
+    NUM_FLOAT  shift, and go to state 27
+    NOT        shift, and go to state 28
+    MINUS      shift, and go to state 29
+    LB         shift, and go to state 30
+
+    E  go to state 70
+
+
+State 52
+
+   34 E: E DIV . E
+
+    NAME       shift, and go to state 25
+    NUM_INT    shift, and go to state 26
+    NUM_FLOAT  shift, and go to state 27
+    NOT        shift, and go to state 28
+    MINUS      shift, and go to state 29
+    LB         shift, and go to state 30
+
+    E  go to state 71
+
+
+State 53
+
+   35 E: E MOD . E
+
+    NAME       shift, and go to state 25
+    NUM_INT    shift, and go to state 26
+    NUM_FLOAT  shift, and go to state 27
+    NOT        shift, and go to state 28
+    MINUS      shift, and go to state 29
+    LB         shift, and go to state 30
+
+    E  go to state 72
+
+
+State 54
+
+   21 BLOCK: LC $@2 STATEMENT_LIST RC .
+
+    $default  reduce using rule 21 (BLOCK)
+
+
+State 55
+
+   17 STATEMENT: KEY_IF LB E RB . STATEMENT
+   18          | KEY_IF LB E RB . STATEMENT KEY_ELSE STATEMENT
+
+    TYPE_INT    shift, and go to state 1
+    TYPE_FLOAT  shift, and go to state 2
+    NAME        shift, and go to state 3
+    LC          shift, and go to state 4
+    KEY_IF      shift, and go to state 5
+    KEY_SWITCH  shift, and go to state 6
+
+    SWITCH     go to state 7
+    STATEMENT  go to state 73
+    BLOCK      go to state 11
+    ASSIGN     go to state 12
+    DATA_TYPE  go to state 13
+    VAR_DEC    go to state 14
+
+
+State 56
+
+    9 SWITCH: KEY_SWITCH LB E RB . LC $@1 CASE_LIST DEFAULT RC
+
+    LC  shift, and go to state 74
+
+
+State 57
+
+   26 VAR_DEC_ASSIGN: NAME EQUAL . E
+
+    NAME       shift, and go to state 25
+    NUM_INT    shift, and go to state 26
+    NUM_FLOAT  shift, and go to state 27
+    NOT        shift, and go to state 28
+    MINUS      shift, and go to state 29
+    LB         shift, and go to state 30
+
+    E  go to state 75
+
+
+State 58
+
+   27 VAR_DEC_ASSIGN_LIST: VAR_DEC_ASSIGN COMMA . VAR_DEC_ASSIGN_LIST
+
+    NAME  shift, and go to state 35
+
+    VAR_DEC_ASSIGN       go to state 36
+    VAR_DEC_ASSIGN_LIST  go to state 76
+
+
+State 59
+
+   45 E: LB E RB .
+
+    $default  reduce using rule 45 (E)
+
+
+State 60
+
+   31 E: E . PLUS E
+   32  | E . MINUS E
+   33  | E . MUL E
+   34  | E . DIV E
+   35  | E . MOD E
+   36  | E . LESS E
+   36  | E LESS E .
+   37  | E . GREATER E
+   38  | E . LESS_EQUAL E
+   39  | E . GREATER_EQUAL E
+   40  | E . NOT_EQUAL E
+   41  | E . IS_EQUAL E
+   42  | E . AND E
+   43  | E . OR E
+
+    PLUS   shift, and go to state 49
+    MINUS  shift, and go to state 50
+    MUL    shift, and go to state 51
+    DIV    shift, and go to state 52
+    MOD    shift, and go to state 53
+
+    $default  reduce using rule 36 (E)
+
+
+State 61
+
+   31 E: E . PLUS E
+   32  | E . MINUS E
+   33  | E . MUL E
+   34  | E . DIV E
+   35  | E . MOD E
+   36  | E . LESS E
+   37  | E . GREATER E
+   37  | E GREATER E .
+   38  | E . LESS_EQUAL E
+   39  | E . GREATER_EQUAL E
+   40  | E . NOT_EQUAL E
+   41  | E . IS_EQUAL E
+   42  | E . AND E
+   43  | E . OR E
+
+    LESS   shift, and go to state 41
+    PLUS   shift, and go to state 49
+    MINUS  shift, and go to state 50
+    MUL    shift, and go to state 51
+    DIV    shift, and go to state 52
+    MOD    shift, and go to state 53
+
+    $default  reduce using rule 37 (E)
+
+
+State 62
+
+   31 E: E . PLUS E
+   32  | E . MINUS E
+   33  | E . MUL E
+   34  | E . DIV E
+   35  | E . MOD E
+   36  | E . LESS E
+   37  | E . GREATER E
+   38  | E . LESS_EQUAL E
+   38  | E LESS_EQUAL E .
+   39  | E . GREATER_EQUAL E
+   40  | E . NOT_EQUAL E
+   41  | E . IS_EQUAL E
+   42  | E . AND E
+   43  | E . OR E
+
+    LESS     shift, and go to state 41
+    GREATER  shift, and go to state 42
+    PLUS     shift, and go to state 49
+    MINUS    shift, and go to state 50
+    MUL      shift, and go to state 51
+    DIV      shift, and go to state 52
+    MOD      shift, and go to state 53
+
+    $default  reduce using rule 38 (E)
+
+
+State 63
+
+   31 E: E . PLUS E
+   32  | E . MINUS E
+   33  | E . MUL E
+   34  | E . DIV E
+   35  | E . MOD E
+   36  | E . LESS E
+   37  | E . GREATER E
+   38  | E . LESS_EQUAL E
+   39  | E . GREATER_EQUAL E
+   39  | E GREATER_EQUAL E .
+   40  | E . NOT_EQUAL E
+   41  | E . IS_EQUAL E
+   42  | E . AND E
+   43  | E . OR E
+
+    LESS        shift, and go to state 41
+    GREATER     shift, and go to state 42
+    LESS_EQUAL  shift, and go to state 43
+    PLUS        shift, and go to state 49
+    MINUS       shift, and go to state 50
+    MUL         shift, and go to state 51
+    DIV         shift, and go to state 52
+    MOD         shift, and go to state 53
+
+    $default  reduce using rule 39 (E)
+
+
+State 64
+
+   31 E: E . PLUS E
+   32  | E . MINUS E
+   33  | E . MUL E
+   34  | E . DIV E
+   35  | E . MOD E
+   36  | E . LESS E
+   37  | E . GREATER E
+   38  | E . LESS_EQUAL E
+   39  | E . GREATER_EQUAL E
+   40  | E . NOT_EQUAL E
+   40  | E NOT_EQUAL E .
+   41  | E . IS_EQUAL E
+   42  | E . AND E
+   43  | E . OR E
+
+    LESS           shift, and go to state 41
+    GREATER        shift, and go to state 42
+    LESS_EQUAL     shift, and go to state 43
+    GREATER_EQUAL  shift, and go to state 44
+    PLUS           shift, and go to state 49
+    MINUS          shift, and go to state 50
+    MUL            shift, and go to state 51
+    DIV            shift, and go to state 52
+    MOD            shift, and go to state 53
+
+    $default  reduce using rule 40 (E)
+
+
+State 65
+
+   31 E: E . PLUS E
+   32  | E . MINUS E
+   33  | E . MUL E
+   34  | E . DIV E
+   35  | E . MOD E
+   36  | E . LESS E
+   37  | E . GREATER E
+   38  | E . LESS_EQUAL E
+   39  | E . GREATER_EQUAL E
+   40  | E . NOT_EQUAL E
+   41  | E . IS_EQUAL E
+   41  | E IS_EQUAL E .
+   42  | E . AND E
+   43  | E . OR E
+
+    LESS           shift, and go to state 41
+    GREATER        shift, and go to state 42
+    LESS_EQUAL     shift, and go to state 43
+    GREATER_EQUAL  shift, and go to state 44
+    NOT_EQUAL      shift, and go to state 45
+    AND            shift, and go to state 47
+    OR             shift, and go to state 48
+    PLUS           shift, and go to state 49
+    MINUS          shift, and go to state 50
+    MUL            shift, and go to state 51
+    DIV            shift, and go to state 52
+    MOD            shift, and go to state 53
+
+    $default  reduce using rule 41 (E)
+
+
+State 66
+
+   31 E: E . PLUS E
+   32  | E . MINUS E
+   33  | E . MUL E
+   34  | E . DIV E
+   35  | E . MOD E
+   36  | E . LESS E
+   37  | E . GREATER E
+   38  | E . LESS_EQUAL E
+   39  | E . GREATER_EQUAL E
+   40  | E . NOT_EQUAL E
+   41  | E . IS_EQUAL E
+   42  | E . AND E
+   42  | E AND E .
+   43  | E . OR E
+
+    LESS           shift, and go to state 41
+    GREATER        shift, and go to state 42
+    LESS_EQUAL     shift, and go to state 43
+    GREATER_EQUAL  shift, and go to state 44
+    NOT_EQUAL      shift, and go to state 45
+    PLUS           shift, and go to state 49
+    MINUS          shift, and go to state 50
+    MUL            shift, and go to state 51
+    DIV            shift, and go to state 52
+    MOD            shift, and go to state 53
+
+    $default  reduce using rule 42 (E)
+
+
+State 67
+
+   31 E: E . PLUS E
+   32  | E . MINUS E
+   33  | E . MUL E
+   34  | E . DIV E
+   35  | E . MOD E
+   36  | E . LESS E
+   37  | E . GREATER E
+   38  | E . LESS_EQUAL E
+   39  | E . GREATER_EQUAL E
+   40  | E . NOT_EQUAL E
+   41  | E . IS_EQUAL E
+   42  | E . AND E
+   43  | E . OR E
+   43  | E OR E .
+
+    LESS           shift, and go to state 41
+    GREATER        shift, and go to state 42
+    LESS_EQUAL     shift, and go to state 43
+    GREATER_EQUAL  shift, and go to state 44
+    NOT_EQUAL      shift, and go to state 45
+    AND            shift, and go to state 47
+    PLUS           shift, and go to state 49
+    MINUS          shift, and go to state 50
+    MUL            shift, and go to state 51
+    DIV            shift, and go to state 52
+    MOD            shift, and go to state 53
+
+    $default  reduce using rule 43 (E)
+
+
+State 68
+
+   31 E: E . PLUS E
+   31  | E PLUS E .
+   32  | E . MINUS E
+   33  | E . MUL E
+   34  | E . DIV E
+   35  | E . MOD E
+   36  | E . LESS E
+   37  | E . GREATER E
+   38  | E . LESS_EQUAL E
+   39  | E . GREATER_EQUAL E
+   40  | E . NOT_EQUAL E
+   41  | E . IS_EQUAL E
+   42  | E . AND E
+   43  | E . OR E
+
+    MINUS  shift, and go to state 50
+    MUL    shift, and go to state 51
+    DIV    shift, and go to state 52
+    MOD    shift, and go to state 53
+
+    $default  reduce using rule 31 (E)
+
+
+State 69
+
+   31 E: E . PLUS E
+   32  | E . MINUS E
+   32  | E MINUS E .
+   33  | E . MUL E
+   34  | E . DIV E
+   35  | E . MOD E
+   36  | E . LESS E
+   37  | E . GREATER E
+   38  | E . LESS_EQUAL E
+   39  | E . GREATER_EQUAL E
+   40  | E . NOT_EQUAL E
+   41  | E . IS_EQUAL E
+   42  | E . AND E
+   43  | E . OR E
+
+    MUL  shift, and go to state 51
+    DIV  shift, and go to state 52
+    MOD  shift, and go to state 53
+
+    $default  reduce using rule 32 (E)
+
+
+State 70
+
+   31 E: E . PLUS E
+   32  | E . MINUS E
+   33  | E . MUL E
+   33  | E MUL E .
+   34  | E . DIV E
+   35  | E . MOD E
+   36  | E . LESS E
+   37  | E . GREATER E
+   38  | E . LESS_EQUAL E
+   39  | E . GREATER_EQUAL E
+   40  | E . NOT_EQUAL E
+   41  | E . IS_EQUAL E
+   42  | E . AND E
+   43  | E . OR E
+
+    DIV  shift, and go to state 52
+    MOD  shift, and go to state 53
+
+    $default  reduce using rule 33 (E)
+
+
+State 71
+
+   31 E: E . PLUS E
+   32  | E . MINUS E
+   33  | E . MUL E
+   34  | E . DIV E
+   34  | E DIV E .
+   35  | E . MOD E
+   36  | E . LESS E
+   37  | E . GREATER E
+   38  | E . LESS_EQUAL E
+   39  | E . GREATER_EQUAL E
+   40  | E . NOT_EQUAL E
+   41  | E . IS_EQUAL E
+   42  | E . AND E
+   43  | E . OR E
+
+    MOD  shift, and go to state 53
+
+    $default  reduce using rule 34 (E)
+
+
+State 72
+
+   31 E: E . PLUS E
+   32  | E . MINUS E
+   33  | E . MUL E
+   34  | E . DIV E
+   35  | E . MOD E
+   35  | E MOD E .
+   36  | E . LESS E
+   37  | E . GREATER E
+   38  | E . LESS_EQUAL E
+   39  | E . GREATER_EQUAL E
+   40  | E . NOT_EQUAL E
+   41  | E . IS_EQUAL E
+   42  | E . AND E
+   43  | E . OR E
+
+    $default  reduce using rule 35 (E)
+
+
+State 73
+
+   17 STATEMENT: KEY_IF LB E RB STATEMENT .
+   18          | KEY_IF LB E RB STATEMENT . KEY_ELSE STATEMENT
+
+    KEY_ELSE  shift, and go to state 77
+
+    KEY_ELSE  [reduce using rule 17 (STATEMENT)]
+    $default  reduce using rule 17 (STATEMENT)
+
+
+State 74
+
+    9 SWITCH: KEY_SWITCH LB E RB LC . $@1 CASE_LIST DEFAULT RC
+
+    $default  reduce using rule 8 ($@1)
+
+    $@1  go to state 78
+
+
+State 75
+
+   26 VAR_DEC_ASSIGN: NAME EQUAL E .
+   31 E: E . PLUS E
+   32  | E . MINUS E
+   33  | E . MUL E
+   34  | E . DIV E
+   35  | E . MOD E
+   36  | E . LESS E
+   37  | E . GREATER E
+   38  | E . LESS_EQUAL E
+   39  | E . GREATER_EQUAL E
+   40  | E . NOT_EQUAL E
+   41  | E . IS_EQUAL E
+   42  | E . AND E
+   43  | E . OR E
+
+    LESS           shift, and go to state 41
+    GREATER        shift, and go to state 42
+    LESS_EQUAL     shift, and go to state 43
+    GREATER_EQUAL  shift, and go to state 44
+    NOT_EQUAL      shift, and go to state 45
+    IS_EQUAL       shift, and go to state 46
+    AND            shift, and go to state 47
+    OR             shift, and go to state 48
+    PLUS           shift, and go to state 49
+    MINUS          shift, and go to state 50
+    MUL            shift, and go to state 51
+    DIV            shift, and go to state 52
+    MOD            shift, and go to state 53
+
+    $default  reduce using rule 26 (VAR_DEC_ASSIGN)
+
+
+State 76
+
+   27 VAR_DEC_ASSIGN_LIST: VAR_DEC_ASSIGN COMMA VAR_DEC_ASSIGN_LIST .
+
+    $default  reduce using rule 27 (VAR_DEC_ASSIGN_LIST)
+
+
+State 77
+
+   18 STATEMENT: KEY_IF LB E RB STATEMENT KEY_ELSE . STATEMENT
+
+    TYPE_INT    shift, and go to state 1
+    TYPE_FLOAT  shift, and go to state 2
+    NAME        shift, and go to state 3
+    LC          shift, and go to state 4
+    KEY_IF      shift, and go to state 5
+    KEY_SWITCH  shift, and go to state 6
+
+    SWITCH     go to state 7
+    STATEMENT  go to state 79
+    BLOCK      go to state 11
+    ASSIGN     go to state 12
+    DATA_TYPE  go to state 13
+    VAR_DEC    go to state 14
+
+
+State 78
+
+    9 SWITCH: KEY_SWITCH LB E RB LC $@1 . CASE_LIST DEFAULT RC
+
+    KEY_CASE  shift, and go to state 80
+
+    CASE       go to state 81
+    CASE_LIST  go to state 82
+
+
+State 79
+
+   18 STATEMENT: KEY_IF LB E RB STATEMENT KEY_ELSE STATEMENT .
+
+    $default  reduce using rule 18 (STATEMENT)
+
+
+State 80
+
+    1 CASE: KEY_CASE . NUM_INT COLON STATEMENT_LIST
+    2     | KEY_CASE . NUM_INT COLON
+
+    NUM_INT  shift, and go to state 83
+
+
+State 81
+
+    6 CASE_LIST: CASE . CASE_LIST
+    7          | CASE .
+
+    KEY_CASE  shift, and go to state 80
+
+    $default  reduce using rule 7 (CASE_LIST)
+
+    CASE       go to state 81
+    CASE_LIST  go to state 84
+
+
+State 82
+
+    9 SWITCH: KEY_SWITCH LB E RB LC $@1 CASE_LIST . DEFAULT RC
+
+    KEY_DEFAULT  shift, and go to state 85
+
+    $default  reduce using rule 5 (DEFAULT)
+
+    DEFAULT  go to state 86
+
+
+State 83
+
+    1 CASE: KEY_CASE NUM_INT . COLON STATEMENT_LIST
+    2     | KEY_CASE NUM_INT . COLON
+
+    COLON  shift, and go to state 87
+
+
+State 84
+
+    6 CASE_LIST: CASE CASE_LIST .
+
+    $default  reduce using rule 6 (CASE_LIST)
+
+
+State 85
+
+    3 DEFAULT: KEY_DEFAULT . COLON STATEMENT_LIST
+    4        | KEY_DEFAULT . COLON
+
+    COLON  shift, and go to state 88
+
+
+State 86
+
+    9 SWITCH: KEY_SWITCH LB E RB LC $@1 CASE_LIST DEFAULT . RC
+
+    RC  shift, and go to state 89
+
+
+State 87
+
+    1 CASE: KEY_CASE NUM_INT COLON . STATEMENT_LIST
+    2     | KEY_CASE NUM_INT COLON .
+
+    TYPE_INT    shift, and go to state 1
+    TYPE_FLOAT  shift, and go to state 2
+    NAME        shift, and go to state 3
+    LC          shift, and go to state 4
+    KEY_IF      shift, and go to state 5
+    KEY_SWITCH  shift, and go to state 6
+
+    $default  reduce using rule 2 (CASE)
+
+    SWITCH          go to state 7
+    STATEMENT_LIST  go to state 90
+    STATEMENT       go to state 10
+    BLOCK           go to state 11
+    ASSIGN          go to state 12
+    DATA_TYPE       go to state 13
+    VAR_DEC         go to state 14
+
+
+State 88
+
+    3 DEFAULT: KEY_DEFAULT COLON . STATEMENT_LIST
+    4        | KEY_DEFAULT COLON .
+
+    TYPE_INT    shift, and go to state 1
+    TYPE_FLOAT  shift, and go to state 2
+    NAME        shift, and go to state 3
+    LC          shift, and go to state 4
+    KEY_IF      shift, and go to state 5
+    KEY_SWITCH  shift, and go to state 6
+
+    $default  reduce using rule 4 (DEFAULT)
+
+    SWITCH          go to state 7
+    STATEMENT_LIST  go to state 91
+    STATEMENT       go to state 10
+    BLOCK           go to state 11
+    ASSIGN          go to state 12
+    DATA_TYPE       go to state 13
+    VAR_DEC         go to state 14
+
+
+State 89
+
+    9 SWITCH: KEY_SWITCH LB E RB LC $@1 CASE_LIST DEFAULT RC .
+
+    $default  reduce using rule 9 (SWITCH)
+
+
+State 90
+
+    1 CASE: KEY_CASE NUM_INT COLON STATEMENT_LIST .
+
+    $default  reduce using rule 1 (CASE)
+
+
+State 91
+
+    3 DEFAULT: KEY_DEFAULT COLON STATEMENT_LIST .
+
+    $default  reduce using rule 3 (DEFAULT)
