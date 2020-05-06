@@ -47,6 +47,8 @@ struct code
 		Label L4: ...... (label, NULL, NULL, L4)
 		goto L  ......  (goto, NULL, NULL, L)
 		x = -y .......  (SIGN_REV, y, NULL, x)
+		(param, NULL,, NULL, x)
+		(call, fxn, 2, NULL)
 	*/
 };
 

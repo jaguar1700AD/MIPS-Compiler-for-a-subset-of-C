@@ -13,6 +13,43 @@ int type; // The current variable declaration type
 struct symbol_table* table = NULL;
 struct depth_type* cont;
 
+struct name_list
+{
+	char* name;
+	struct name_list* next;
+};
+
+struct name_list* name_list_new(char* name)
+{
+	struct name_list* new_list = malloc(sizeof(struct name_list));
+	new_list->name = malloc(sizeof(name));
+	sprintf(new_list->name, "%s", name);
+	new_list->next = NULL;
+	return new_list;
+}
+
+struct name_list* name_list_insert_beg(struct name_list* list, char* name)
+{
+	struct name_list* new_list = name_list_new(name);
+	new_list->next = list;
+	return new_list;
+}
+
+struct exprn_list
+{
+	struct code* startP;
+	struct code* endP;
+	struct name_list* var_list;
+	struct type_list* type_list;
+};
+
+char* get_fxn_name(char* name, int depth)
+{
+	char* str = malloc(sizeof(*name) + 15);
+	strcpy(str, "%s_fxn_%d", name, depth);
+	return str;
+}
+
 %}
 
 %union
@@ -24,6 +61,8 @@ struct depth_type* cont;
 	struct code_store* CODE_STORE;
 	struct Hcase* HCASE;
 	struct Hcase_list* HCASE_LIST;
+	struct type_list* TYPE_LIST;
+	struct exprn_list* EXPRN_LIST;
 }
 
 %token TYPE_INT TYPE_FLOAT
@@ -35,11 +74,14 @@ struct depth_type* cont;
 %token LB RB LC RC
 %token KEY_MAIN KEY_VOID KEY_RETURN KEY_BREAK KEY_DEFAULT KEY_IF KEY_ELSE KEY_SWITCH KEY_CASE KEY_FOR KEY_WHILE
 
-%type <num_i> DATA_TYPE 
+%type <num_i> DATA_TYPE ATTR
 %type <EXPRN> E
 %type <CODE_STORE> VAR_DEC VAR_DEC_ASSIGN_LIST VAR_DEC_ASSIGN ASSIGN STATEMENT STATEMENT_LIST BLOCK SWITCH FOR_HELPER PROG
+%type <CODE_STORE> FXN_DEF FXN_CALL
 %type <HCASE> CASE DEFAULT
 %type <HCASE_LIST> CASE_LIST
+%type <TYPE_LIST> ATTR_LIST ATTR_LIST_OR_NULL
+%type <EXPRN_LIST> E_LIST 
 
 %start PROG
 
@@ -59,6 +101,135 @@ struct depth_type* cont;
 %left MOD
 
 %%
+
+ATTR: DATA_TYPE NAME 
+{
+	cont = sym_table_search(table, $2);
+	if (cont != NULL && cont->depth == table->depth) {printf("Variable %s already declared\n", $2); exit(1);}
+	sym_table_insert(table, $2, $1);
+	$$ = $1;
+};
+
+ATTR_LIST: ATTR COMMA ATTR_LIST
+{
+	$$ = type_list_insert_beg($3, $1);
+}
+| ATTR
+{
+	$$ = type_list_new($1);
+};
+
+ATTR_LIST_OR_NULL: ATTR_LIST {$$ = $1;} | {$$ = NULL;};
+
+FXN_DEF: DATA_TYPE NAME {table = sym_table_new(table);} LB ATTR_LIST_OR_NULL RB LC STATEMENT_LIST RC
+{
+	table = table->parent;
+	cont = sym_table_fxn_search(table, $2, $5);
+	if (cont != NULL && cont->depth == table->depth) {printf("Fxn %s already declared\n", $2); exit(1);}
+	sym_table_fxn_insert(table, $2, $5, $1);
+
+	char* label = get_new_label();
+	char* str = get_fxn_name($2, table_depth);
+	struct code* new_code = code_new("label", NULL, NULL, str);
+	new_code->next = $8->startP;
+	$$ = code_store_init(new_code, $8->endP, NULL);
+}
+| KEY_VOID NAME {table = sym_table_new(table);} LB ATTR_LIST_OR_NULL RB LC STATEMENT_LIST RC
+{
+	table = table->parent;
+	cont = sym_table_fxn_search(table, $2, $5);
+	if (cont != NULL && cont->depth == table->depth) {printf("Fxn %s already declared\n", $2); exit(1);}
+	sym_table_fxn_insert(table, $2, $5, -1);
+
+	char* label = get_new_label();
+	char* str = get_fxn_name($2, table_depth);
+	struct code* new_code = code_new("label", NULL, NULL, str);
+	new_code->next = $8->startP;
+	$$ = code_store_init(new_code, $8->endP, NULL);
+};
+
+E_LIST: E COMMA E_LIST
+{
+	struct exprn_list* new_list = malloc(sizeof(exprn_list));
+	$1->last_line_P->next = $3->startP;
+	new_list->startP = $1->codeP;
+	new_list->endP = $3->endP;
+	new_list->var_list = name_list_insert_beg($3->var_list, $1->store_var);
+	new_list->type_list = type_list_insert_beg($3->type_list, $1->type);
+	$$ = new_list;
+}
+| E
+{
+	struct exprn_list* new_list = malloc(sizeof(exprn_list));
+	new_list->startP = $1->codeP;
+	new_list->endP = $1->last_line_P;
+	new_list->var_list = name_list_new($1->store_var);
+	new_list->type_list = type_list_new($1->type);
+	$$ = new_list;
+};
+
+
+FXN_CALL: NAME LB E_LIST RB
+{
+	$$ = code_store_init(NULL, NULL, NULL);
+	cont = sym_table_fxn_search(table, $1, $3->type_list);
+	if (cont == NULL) {printf("No such fxn %s declared\n", $1); exit(1);}
+	char* fxn_name = get_fxn_name($1, cont->depth);
+
+	struct name_list* list = $3->var_list;
+	struct code* old_code = NULL;
+	struct code* new_code = NULL;
+	int n = 0;
+	while(list != NULL)
+	{
+		n += 1;
+		char* name = list->name;
+		new_code = code_new("param", NULL, NULL, name);
+		if (n == 1) $3->endP->next = new_code; 
+		if (old_code != NULL) old_code->next = new_code;
+		old_code = new_code;
+		list = list->next;
+	}
+	char* num = malloc(sizeof(char) * 10);
+	sprintf(num, "%d", n);
+	if (cont->type == -1) 
+	{
+		struct code* code = code_new("call", fxn_name, num, NULL);
+		$$->store_var = NULL;
+	}
+	else
+	{
+		char* var = get_new_var();
+		struct code* code = code_new("call", fxn_name, num, var);
+		$$->store_var = var;
+	}
+	new_code->next = code;
+	$$->startP = $3->startP;
+	$$->endP = code;
+}
+| NAME LB RB
+{
+	$$ = code_store_init(NULL, NULL, NULL);
+	cont = sym_table_fxn_search(table, $1, NULL);
+	if (cont == NULL) {printf("No such fxn %s declared\n", $1); exit(1);}
+	char* fxn_name = get_fxn_name($1, cont->depth);
+
+	char* num = malloc(sizeof(char) * 10);
+	sprintf(num, "%d", 0);
+	if (cont->type == -1) 
+	{
+		struct code* code = code_new("call", fxn_name, num, NULL);
+		$$->store_var = NULL;
+	}
+	else
+	{
+		char* var = get_new_var();
+		struct code* code = code_new("call", fxn_name, num, var);
+		$$->store_var = var;
+	}
+	$$->startP = code;
+	$$->endP = code;
+};
 
 CASE: KEY_CASE NUM_INT COLON STATEMENT_LIST
 {
@@ -151,8 +322,8 @@ STATEMENT_LIST: STATEMENT STATEMENT_LIST {$$ = code_store_concat_init($1, $2);}
 | STATEMENT {$$ = code_store_copy_init($1);}
 ;
 
-STATEMENT: 
-KEY_FOR LB {table = sym_table_new(table);} STATEMENT E SEMI ASSIGN RB FOR_HELPER
+STATEMENT: FXN_CALL SEMI {$$ = code_store_copy_init($1);}
+| KEY_FOR LB {table = sym_table_new(table);} STATEMENT E SEMI ASSIGN RB FOR_HELPER
 {
 	table = table->parent;
 	exprn_type_cast($5, 2);
@@ -210,7 +381,7 @@ KEY_FOR LB {table = sym_table_new(table);} STATEMENT E SEMI ASSIGN RB FOR_HELPER
 	$$ = code_store_init(begin_label_line, false_label_line, NULL);
 
 }
-| SWITCH
+| SWITCH {$$ = code_store_copy_init($1);}
 | VAR_DEC SEMI {$$ = code_store_copy_init($1);}
 |  ASSIGN SEMI {$$ = code_store_copy_init($1);}
 | BLOCK {$$ = code_store_copy_init($1);}
@@ -488,6 +659,15 @@ E: 	E PLUS E
 	printf(" \n ....NAME..... \n");
 	code_print($$->codeP);
 	printf(" \n ............. \n");
+}
+| FXN_CALL
+{
+	if ($1->store_var == NULL) {printf("Fxn of void return type cannot be used inside exprns\n"); exit(1);}
+	$$ = exprn_init_null();
+	$$->type = $1->type;
+	$$->codeP = $1->startP;
+	$$->last_line_P = $1->endP;
+	$$->store_var = $1->store_var;
 }
 ; 
 
