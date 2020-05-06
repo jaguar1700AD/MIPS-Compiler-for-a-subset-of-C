@@ -1,6 +1,6 @@
-int x;
-switch(x)
+int x, y;
+while (x < 10) 
 {
-	case 1: 
-	case 2: x = 7;
+	x = x + 1;
+	int y = x + 2;
 }

@@ -149,7 +149,36 @@ STATEMENT_LIST: STATEMENT STATEMENT_LIST {$$ = code_store_concat_init($1, $2);}
 | STATEMENT {$$ = code_store_copy_init($1);}
 ;
 
-STATEMENT: SWITCH
+STATEMENT: 
+KEY_WHILE LB E RB STATEMENT
+{
+	exprn_type_cast($3, 2);
+
+	char* true_label = get_new_label();
+	char* false_label = get_new_label();
+	char* begin_label = get_new_label();
+	struct code* true_label_line = code_new("label", NULL, NULL, true_label);
+	struct code* false_label_line = code_new("label", NULL, NULL, false_label);
+	struct code* begin_label_line = code_new("label", NULL, NULL, begin_label);
+	struct code* jump_line = code_new("goto", NULL, NULL, begin_label);
+
+	// Insert new codes in between old codes
+	assert($3->last_line_P->next == NULL && $5->endP->next == NULL);
+	begin_label_line->next = $3->codeP;
+	$3->last_line_P->next = true_label_line;
+	true_label_line->next = $5->startP;
+	$5->endP->next = jump_line;
+	jump_line->next = false_label_line;
+
+	code_list_backpatch($3->true_jump_lines, true_label);
+	code_list_backpatch($3->false_jump_lines, false_label);
+	codeP_list_backpatch($3->true_jumpPs, true_label_line);
+	codeP_list_backpatch($3->false_jumpPs, false_label_line);
+	
+	$$ = code_store_init(begin_label_line, false_label_line, NULL);
+
+}
+| SWITCH
 | VAR_DEC SEMI {$$ = code_store_copy_init($1);}
 |  ASSIGN SEMI {$$ = code_store_copy_init($1);}
 | BLOCK {$$ = code_store_copy_init($1);}
